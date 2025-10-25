@@ -1,0 +1,62 @@
+@startuml
+package Cliente {
+    component "Cliente Usuário" as UC
+    component "Cliente Admnistrador" as AC
+}
+
+package Servidor {
+    component "Controller Requisições" as IR
+    component "Núcleo" as NUCLEO
+    component "Repository" as ID
+    database "DB" as DB {
+        component "Usuarios" as U
+        component "Espaços" as E
+        component "Reservas" as R
+        component "Pagamentos" as P
+    }
+}
+
+[AC] -down-> [IR] : "HTTP/REST"
+[UC] -down-> [IR] : "HTTP/REST"
+[IR] -down-> [NUCLEO] : "Chama métodos"
+[NUCLEO] -down-> [ID] : "Acessa dados"
+[ID] --> [DB]
+
+note left of UC
+    **Requisições Usuário**
+    - Reservar espaço
+    - Realizar pagamento
+end note
+
+note right of AC
+    **Requisições Administrador**
+    - Cadastrar espaço
+end note
+
+note left of IR
+    **Controlador**
+    - Recebe requisições
+end note
+
+note left of NUCLEO
+    **Núcleo da Aplicação**
+    - Contém os métodos principais
+    - Requisita os dados salvos
+    - Gerencia pagamentos e reservas
+end note
+
+note left of ID
+    **Interface de acesso a dados**
+    - Lê dados do banco
+    - Escreve dados no banco
+end note
+
+note left of DB 
+    **Persistência**
+    - Armazena dados de usuários
+    - Armazena dados de espaços
+    - Armazena reservas
+    - Armazena pagamentos
+end note
+
+@enduml
