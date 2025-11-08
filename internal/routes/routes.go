@@ -30,4 +30,6 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	// C. Efetua o pagamento adiantado do sinal
 	mux.HandleFunc("POST /pix/signal/{key}", MakePartialPix)
+
+	mux.HandleFunc("POST /user", CreateUser)
 }
