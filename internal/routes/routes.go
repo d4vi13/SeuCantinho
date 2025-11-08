@@ -2,7 +2,7 @@ package routes
 
 import "net/http"
 
-func Routes(mux *http.ServeMux) {
+func RegisterRoutes(mux *http.ServeMux) {
 
 	// B. Obtem todas as reservas
 	mux.HandleFunc("GET /booking/{$}", GetAllBookings)
