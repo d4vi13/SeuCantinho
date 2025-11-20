@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	models "github.com/d4vi13/SeuCantinho/internal/models/users"
 )
 
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userReq CreateRequestUser
-	var user models.User
 
 	err := json.NewDecoder(r.Body).Decode(&userReq)
 	if err != nil {
@@ -27,5 +24,7 @@ func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Req
 	case 1:
 		w.WriteHeader(http.StatusConflict)
 		fmt.Fprintf(w, "User already exists")
+	case 2:
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
