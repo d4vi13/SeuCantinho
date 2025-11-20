@@ -6,7 +6,12 @@ import (
 
 var globalID int = 0
 
-func CreateUser(username string, passHash string, isAdmin bool) (models.User, int) {
+type UsersService struct {
+}
+
+func (service *UsersService) Init() {}
+
+func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (models.User, int) {
 
 	user := models.User{
 		Id:       globalID,

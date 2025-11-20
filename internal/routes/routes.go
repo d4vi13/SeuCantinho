@@ -1,35 +1,42 @@
 package routes
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/d4vi13/SeuCantinho/internal/controller/users"
+)
 
 func RegisterRoutes(mux *http.ServeMux) {
 
-	// B. Obtem todas as reservas
-	mux.HandleFunc("GET /booking/{$}", GetAllBookings)
+	var usersController users.UsersController
+	usersController.Init()
 
-	// B. Obtem uma reserva especifícia
-	mux.HandleFunc("GET /booking/{id}", GetBookingById)
+	// // B. Obtem todas as reservas
+	// mux.HandleFunc("GET /booking/{$}", GetAllBookings)
 
-	// B. Cancela uma reserva especifíca
-	mux.HandleFunc("POST /booking/cancel/{id}", CancelBookingById)
+	// // B. Obtem uma reserva especifícia
+	// mux.HandleFunc("GET /booking/{id}", GetBookingById)
 
-	// B. Obtem todos os espaços (Reservados e Disponíveis)
-	mux.HandleFunc("GET /space/{$}", GetAllSpaces)
+	// // B. Cancela uma reserva especifíca
+	// mux.HandleFunc("POST /booking/cancel/{id}", CancelBookingById)
 
-	// B. Obtem um espaço específico
-	mux.HandleFunc("GET /space/{id}", GetSpaceById)
+	// // B. Obtem todos os espaços (Reservados e Disponíveis)
+	// mux.HandleFunc("GET /space/{$}", GetAllSpaces)
 
-	// B. Reserva um espaço
-	mux.HandleFunc("POST /space/book", BookSpace)
+	// // B. Obtem um espaço específico
+	// mux.HandleFunc("GET /space/{id}", GetSpaceById)
 
-	// A. Cria um espaço
-	mux.HandleFunc("POST /space/create", CreateSpace)
+	// // B. Reserva um espaço
+	// mux.HandleFunc("POST /space/book", BookSpace)
 
-	// C. Efetua um pagamento
-	mux.HandleFunc("POST /pix/{key}", MakeFullPix)
+	// // A. Cria um espaço
+	// mux.HandleFunc("POST /space/create", CreateSpace)
 
-	// C. Efetua o pagamento adiantado do sinal
-	mux.HandleFunc("POST /pix/signal/{key}", MakePartialPix)
+	// // C. Efetua um pagamento
+	// mux.HandleFunc("POST /pix/{key}", MakeFullPix)
 
-	mux.HandleFunc("POST /user", CreateUser)
+	// // C. Efetua o pagamento adiantado do sinal
+	// mux.HandleFunc("POST /pix/signal/{key}", MakePartialPix)
+
+	mux.HandleFunc("POST /users", usersController.CreateUser)
 }

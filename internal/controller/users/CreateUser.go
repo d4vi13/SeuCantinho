@@ -6,16 +6,9 @@ import (
 	"net/http"
 
 	models "github.com/d4vi13/SeuCantinho/internal/models/users"
-	service "github.com/d4vi13/SeuCantinho/internal/services/users"
 )
 
-type CreateRequestUser struct {
-	Username string `json:"username"`
-	Passhash string `json:"password"`
-	IsAdmin  bool   `json:"isAdmin"`
-}
-
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userReq CreateRequestUser
 	var user models.User
 
@@ -25,7 +18,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ret := service.CreateUser(userReq.Username, userReq.Passhash, userReq.IsAdmin)
+	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Passhash, userReq.IsAdmin)
 
 	switch ret {
 	case 0:
