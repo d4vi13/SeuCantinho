@@ -23,10 +23,9 @@ Class UsersControllers {
     + void UserIsAdmin(req)
 }
 
-
 Class UsersService {
     - UsersRepository usersRepository
-    + bool CreateUser(name, password, isAdmin)
+    + bool CreateUser(username, passHash, isAdmin)
     + bool ValidateUser(userId)
     + bool UserIsAdmin(userId)
 }
