@@ -1,0 +1,22 @@
+services:
+  server:
+    build: .
+    container_name: server
+    ports: 
+      - "8080:8080"
+    environment:
+      - PORT=8080
+
+  db:
+    image: postgres:16
+    container_name: seucantinho_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: seucantinho123
+      POSTGRES_DB: mydb
+    ports:
+     - "5432:5432"
+    volumes:
+     - ./data:/var/lib/postgresql/data
+     - ./migrations:/dockey-entrypoint-initdb.d
