@@ -16,6 +16,14 @@ Class SpaceService {
     + Space[] GetAllUserSpaces(userId)
 }
 
+Class UsersControllers {
+    - UsersService usersService
+    + void CreateUser(req)
+    + void ValidateUser(req)
+    + void UserIsAdmin(req)
+}
+
+
 Class UsersService {
     - UsersRepository usersRepository
     + bool CreateUser(name, password, isAdmin)
@@ -141,5 +149,7 @@ SpaceController -r[hidden]-> BookingController
 BookingController -l[hidden]-> SpaceController
 BookingController -r[hidden]-> PixController
 PixController -l[hidden]-> BookingController
-@enduml
 
+UsersControllers --> UsersService : "Chama Métodos"
+
+@enduml

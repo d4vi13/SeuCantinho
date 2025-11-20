@@ -8,6 +8,7 @@ Node Cliente {
 
 Node Servidor {
     Node Controllers {
+        component [UsersControllers] as UC
         component [BookingController] as BC
         component [PixController] as PC
         component [SpaceController] as SC
@@ -40,12 +41,15 @@ CLI --> IW : Utiliza
 ADM --> IW : Utiliza
 
 IW --> BC : Envia requisições
+IW --> UC : Envia requisições
 IW --> PC : Envia requisições
 IW --> SC : Envia requisições
 
 BC --> BS
 PC --> PS
 SC --> SS
+SC -r[hidden]-> UC
+UC --> US
 
 BS --> BR
 PS --> PR
@@ -59,21 +63,20 @@ PR --> PD
 SR --> SD
 UR --> UD
 
-note right of Controllers 
+note right of Controllers
     * Controladores recebem requisições
     * Orquestram os casos de uso
     * Utilizam os serviços especifícos do caso
 end note
 
-note right of Services 
+note right of Services
     * Regras de negócio
     * Lógica interna
     * Utilizam abstrações dos dados
 end note
 
-note right of Repositories 
+note right of Repositories
     * Se comunicam com o BD
     * Mantêm uma interface de acesso a dados
 end note
 @enduml
-
