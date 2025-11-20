@@ -1,0 +1,79 @@
+@startuml
+Actor Cliente as CLI
+Actor Administrador as ADM
+
+Node Cliente {
+    component [InterfaceWeb] as IW
+}
+
+Node Servidor {
+    Node Controllers {
+        component [BookingController] as BC
+        component [PixController] as PC
+        component [SpaceController] as SC
+    }
+
+
+    Node Services {
+        component [BookingService] as BS
+        component [PixService] as PS
+        component [SpaceService] as SS
+        component [UsersService] as US
+    }
+
+    Node Repositories {
+        component [BookingRepository] as BR
+        component [PixRepository] as PR
+        component [SpaceRepository] as SR
+        component [UsersRepository] as UR
+    }
+
+    Node Databases {
+        database BookingDB as BD
+        database PixDB as PD
+        database SpaceDB as SD
+        database UserDB as UD
+    }
+}
+
+CLI --> IW : Utiliza
+ADM --> IW : Utiliza
+
+IW --> BC : Envia requisições
+IW --> PC : Envia requisições
+IW --> SC : Envia requisições
+
+BC --> BS
+PC --> PS
+SC --> SS
+
+BS --> BR
+PS --> PR
+SS --> SR
+US --> UR
+SS -r-> US : "Validação de Usuário"
+BS -l-> US : "Validação de Usuário"
+
+BR --> BD
+PR --> PD
+SR --> SD
+UR --> UD
+
+note right of Controllers 
+    * Controladores recebem requisições
+    * Orquestram os casos de uso
+    * Utilizam os serviços especifícos do caso
+end note
+
+note right of Services 
+    * Regras de negócio
+    * Lógica interna
+    * Utilizam abstrações dos dados
+end note
+
+note right of Repositories 
+    * Se comunicam com o BD
+    * Mantêm uma interface de acesso a dados
+end note
+@enduml
+

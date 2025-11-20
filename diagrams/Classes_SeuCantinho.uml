@@ -1,0 +1,145 @@
+@startuml
+Class SpaceController {
+    - SpaceService spaceService
+    + void CreateSpace(req)
+    + void GetSpaceById(req)
+    + void GetAllSpaces(req)
+    + void GetAllUserSpaces(req)
+}
+
+Class SpaceService {
+    - UsersService usersService
+    - SpaceRepository spaceRepository
+    + Space CreateSpace(location, substation, price, capacity, photo)
+    + Space GetSpaceById(id)
+    + Space[] GetAllSpaces()
+    + Space[] GetAllUserSpaces(userId)
+}
+
+Class UsersService {
+    - UsersRepository usersRepository
+    + bool CreateUser(name, password, isAdmin)
+    + bool ValidateUser(userId)
+    + bool UserIsAdmin(userId)
+}
+
+Class UsersRepository {
+    + bool SaveUser(user)
+    + User GetUserById(userId)
+}
+
+Class SpaceRepository {
+    - Database db
+    + bool SaveSpace(space)
+    + Space GetSpaceById(id)
+    + Space[] GetAllSpaces()
+    + Space[] GetUserSpaces(userId)
+}
+
+Class Space {
+    - int id
+    - string location
+    - string substation
+    - double price
+    - int capacity
+    - Photo photo
+}
+
+Class User {
+    - string username
+    - string passHash
+    - bool isAdmin
+}
+
+Class Photo {}
+
+Class BookingController {
+    - BookingService bookingService
+    + void CreateBooking(req)
+    + void GetBookingById(req)
+    + void GetAllBookings(req)
+    + void CancelBooking(req)
+}
+
+Class BookingService {
+    - BookingRepository bookingRepository
+    - UsersService usersService
+    - SpaceService spaceService
+    + Book CreateBooking(data, userId, spaceId, paid, hasDeposit)
+    + Book[] GetAllBookings()
+    + Book GetBookingById(bookingId)
+    + bool CancelBooking(req)
+}
+
+Class BookingRepository {
+    - Database db
+    + bool SaveBooking(book)
+    + Book GetBookingById(id)
+    + Book[] GetAllBookings()
+    + bool DeleteBooking(book)
+}
+
+Class Book {
+    - Date date
+    - User user
+    - Space space
+    - bool paid
+    - bool signalDeposit
+}
+
+Class PixController {
+    - PixService pixService
+    + void MakePartialPix(req)
+    + void MakeFullPix(req)
+}
+
+Class PixService {
+    - PixRepository pixRepository
+    + Pix MakePartialPix(name, value)
+    + Pix MakeFullPix(name, value)
+    + Pix GetPixById(pixId)
+}
+
+Class PixRepository {
+    - Database db
+    + bool SavePix(pix)
+    + Pix GetPixById(pixId)
+}
+
+Class Pix {
+    - int id
+    - string name
+    - double value
+}
+
+
+SpaceController --> SpaceService : "Chama métodos"
+SpaceService -d-> Space : "Cria / usa"
+SpaceService -l-> SpaceRepository : "Chama métodos"
+SpaceService --> UsersService : "Chama métodos"
+
+UsersService --> UsersRepository : "Chama métodos"
+UsersService --> User : "Cria / usa"
+
+SpaceRepository -d-> Space : "Retorna"
+UsersRepository --> User : "Retorna"
+Space -d-> Photo : "Usa"
+
+PixController --> PixService : "Chama métodos"
+PixService -r-> PixRepository : "Chama métodos"
+PixRepository --> Pix : "Retorna"
+PixService --> Pix : "Cria / usa"
+
+BookingController --> BookingService : "Chama métodos"
+BookingService --> BookingRepository : "Chama métodos"
+BookingService -l-> SpaceService : "Chama métodos"
+BookingService -d-> UsersService : "Chama métodos"
+BookingService --> Book : "Cria / usa"
+BookingRepository --> Book : "Retorna"
+
+SpaceController -r[hidden]-> BookingController
+BookingController -l[hidden]-> SpaceController
+BookingController -r[hidden]-> PixController
+PixController -l[hidden]-> BookingController
+@enduml
+
