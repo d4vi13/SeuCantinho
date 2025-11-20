@@ -54,12 +54,15 @@ Class Space {
 }
 
 Class User {
+    - int id
     - string username
     - string passHash
     - bool isAdmin
 }
 
-Class Photo {}
+Class Photo {
+    - image img
+}
 
 Class BookingController {
     - BookingService bookingService
