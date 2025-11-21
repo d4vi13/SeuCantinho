@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	addr := flag.String("addr", ":4000", "HTTP Network Address")
+	addr := flag.String("addr", ":"+os.Getenv("PORT"), "HTTP Network Address")
 	flag.Parse()
 
 	mux := http.NewServeMux()
