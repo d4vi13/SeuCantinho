@@ -23,8 +23,13 @@ func (service *SpaceService) Init() {
 
 func (service *SpaceService) CreateSpace(username, passHash, location, substation string, price float64, capacity int, img []byte) int {
 
-	_, ret := service.userService.AuthenticateUser(username, passHash)
-	if ret != 0 {
+	var ret int = service.userService.AuthenticateUser(username, passHash)
+	if ret != users.UserAuthenticated {
+		return InvalidAdmin
+	}
+
+	var adm bool = service.userService.UserIsAdmin(username)
+	if !adm {
 		return InvalidAdmin
 	}
 
