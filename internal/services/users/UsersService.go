@@ -5,6 +5,12 @@ import (
 	"github.com/d4vi13/SeuCantinho/internal/repository/users"
 )
 
+const (
+	UserCreated = iota
+	UserExists
+	InternalError
+)
+
 type UsersService struct {
 	usersRepository users.UsersRepository
 }
@@ -15,9 +21,10 @@ func (service *UsersService) Init() {
 
 func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (*models.User, int) {
 
+	// Verifica se o usuário já existe
 	user, _ := service.usersRepository.GetUserByName(username)
 	if user != nil {
-		return user, 1
+		return user, UserExists
 	}
 
 	user = &models.User{
@@ -26,16 +33,20 @@ func (service *UsersService) CreateUser(username string, passHash string, isAdmi
 		IsAdmin:  isAdmin,
 	}
 
+	// Insere o novo usuário no banco de dados
 	id, err := service.usersRepository.Insert(user)
 
 	if err != nil {
-		return nil, 2
+		return nil, InternalError
 	}
 
+	// Retorna o modelo do novo usuário
 	return &models.User{
 		Id:       id,
 		Username: username,
 		PassHash: passHash,
 		IsAdmin:  isAdmin,
-	}, 0
+	}, UserCreated
 }
+
+func (service *UsersService) AuthenticateUser(username string) bool { return true }

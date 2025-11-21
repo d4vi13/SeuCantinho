@@ -2,29 +2,39 @@ package users
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	svc "github.com/d4vi13/SeuCantinho/internal/services/users"
 )
 
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userReq CreateRequestUser
 
+	// Faz o parsing na requisição
 	err := json.NewDecoder(r.Body).Decode(&userReq)
 	if err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
+	// Chama o serviço para criar o usuário
 	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Passhash, userReq.IsAdmin)
 
+	// Trata retornos
+	w.Header().Set("Content-Type", "application/json")
 	switch ret {
-	case 0:
+	case svc.UserCreated:
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, "New User: %+v\n", user)
-	case 1:
+		json.NewEncoder(w).Encode(user)
+	case svc.UserExists:
 		w.WriteHeader(http.StatusConflict)
-		fmt.Fprintf(w, "User already exists")
-	case 2:
+		json.NewEncoder(w).Encode(map[string]string{"error": "user already exists"})
+	case svc.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
 	}
 }

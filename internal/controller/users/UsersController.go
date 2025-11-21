@@ -1,7 +1,7 @@
 package users
 
 import (
-	"github.com/d4vi13/SeuCantinho/internal/services/users"
+	svc "github.com/d4vi13/SeuCantinho/internal/services/users"
 )
 
 type CreateRequestUser struct {
@@ -11,7 +11,7 @@ type CreateRequestUser struct {
 }
 
 type UsersController struct {
-	usersService users.UsersService
+	usersService svc.UsersService
 }
 
 func (controller *UsersController) Init() {
