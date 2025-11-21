@@ -1,22 +1,29 @@
 services:
   server:
-    build: .
-    container_name: server
+    build:  
+      context: .
+      dockerfile: Dockerfile
+    container_name: seucantinho_backend
+    depends_on: 
+      - seucantinho_db
     ports: 
       - "8080:8080"
     environment:
       - PORT=8080
-
-  db:
-    image: postgres:16
+      - DB_HOST=seucantinho_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=seucantinho123
+      - DB_NAME=seucantinho_db
+  seucantinho_db:
+    image: postgres:17
     container_name: seucantinho_db
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: seucantinho123
-      POSTGRES_DB: mydb
+      POSTGRES_DB: seucantinho_db
     ports:
      - "5432:5432"
     volumes:
      - ./data:/var/lib/postgresql/data
-     - ./migrations:/dockey-entrypoint-initdb.d
+     - ./migrations:/docker-entrypoint-initdb.d
