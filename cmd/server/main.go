@@ -9,7 +9,6 @@ import (
 
 	"github.com/d4vi13/SeuCantinho/internal/database"
 	"github.com/d4vi13/SeuCantinho/internal/routes"
-	"github.com/d4vi13/SeuCantinho/internal/database"
 )
 
 func main() {
