@@ -5,6 +5,8 @@ import (
 )
 
 type CreateRequestSpace struct {
+	Username   string  `json:"username"`
+	Passhash   string  `json:"passhash"`
 	Location   string  `json:"location"`
 	Substation string  `json:"substation"`
 	Price      float64 `json:"price"`
