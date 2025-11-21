@@ -7,7 +7,9 @@ import (
 
 const (
 	UserCreated = iota
-	UserExists
+	UserFound
+	UserNotFound
+	WrongPassword
 	InternalError
 )
 
@@ -19,12 +21,46 @@ func (service *UsersService) Init() {
 	service.usersRepository.Init()
 }
 
+func (service *UsersService) GetUserId(username string) int {
+
+	user, err := service.usersRepository.GetUserByName(username)
+	if err != nil {
+		return -1
+	}
+
+	return user.Id
+}
+
+func (service *UsersService) AuthenticateUser(username string, passHash string) (bool, int) {
+
+	user, err := service.usersRepository.GetUserByName(username)
+	if err != nil {
+		return false, UserNotFound
+	}
+
+	if user.PassHash != passHash {
+		return false, WrongPassword
+	}
+
+	return true, 0
+}
+
+func (service *UsersService) UserIsAdmin(username string) bool {
+
+	user, err := service.usersRepository.GetUserByName(username)
+	if err != nil {
+		return false
+	}
+
+	return user.IsAdmin
+}
+
 func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (*models.User, int) {
 
 	// Verifica se o usuário já existe
 	user, _ := service.usersRepository.GetUserByName(username)
 	if user != nil {
-		return user, UserExists
+		return user, UserFound
 	}
 
 	user = &models.User{
@@ -48,5 +84,3 @@ func (service *UsersService) CreateUser(username string, passHash string, isAdmi
 		IsAdmin:  isAdmin,
 	}, UserCreated
 }
-
-func (service *UsersService) AuthenticateUser(username string) bool { return true }
