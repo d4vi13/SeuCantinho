@@ -9,7 +9,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Connect() (*sql.DB, error) {
+var pool *sql.DB
+
+func Connect() error {
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	user := os.Getenv("DB_USER")
@@ -22,16 +24,15 @@ func Connect() (*sql.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, pass, name)
 
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	pool, err = sql.Open("postgres", dsn)
+	return err
+}
 
-	// Verifica conexão imediatamente; fecha em caso de erro para não vazar conexões
-	if err := db.Ping(); err != nil {
-		db.Close()
-		return nil, err
-	}
+func Query(q string, args ...any) (*sql.Rows, error) {
+	return pool.Query(q, args...)
+}
 
-	return db, nil
+func QueryRow(q string, args ...any) *sql.Row {
+	return pool.QueryRow(q, args...)
 }

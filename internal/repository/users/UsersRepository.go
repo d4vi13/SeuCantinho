@@ -3,23 +3,14 @@ package users
 import (
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/d4vi13/SeuCantinho/internal/database"
 	models "github.com/d4vi13/SeuCantinho/internal/models/users"
 )
 
-type UsersRepository struct {
-	DB *sql.DB
-}
+type UsersRepository struct{}
 
-func (repository *UsersRepository) Init() {
-	conn, err := database.Connect()
-	if err != nil {
-		log.Fatal("DB error:", err)
-	}
-	repository.DB = conn
-}
+func (repository *UsersRepository) Init() {}
 
 func (repository *UsersRepository) Insert(user *models.User) (int, error) {
 	query := `
@@ -29,7 +20,7 @@ func (repository *UsersRepository) Insert(user *models.User) (int, error) {
 	`
 
 	var id int
-	err := repository.DB.QueryRow(query, user.Username, user.PassHash, user.IsAdmin).Scan(&id)
+	err := database.QueryRow(query, user.Username, user.PassHash, user.IsAdmin).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -41,7 +32,7 @@ func (repository *UsersRepository) GetUserByName(username string) (*models.User,
 	query := `SELECT id, username, pass_hash, is_admin FROM users WHERE username = $1`
 	user := &models.User{}
 
-	row := repository.DB.QueryRow(query, username)
+	row := database.QueryRow(query, username)
 
 	err := row.Scan(&user.Id, &user.Username, &user.PassHash, &user.IsAdmin)
 	if err != nil {
