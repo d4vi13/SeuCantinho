@@ -4,9 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+
+  _ "github.com/lib/pq"
 )
 
-func Connect() (*sql.DB, error) {
+var pool *sql.DB
+
+func Connect() error {
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	user := os.Getenv("DB_USER")
@@ -16,5 +20,11 @@ func Connect() (*sql.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, pass, name)
 
-	return sql.Open("postgres", dsn)
+	var err error
+	pool, err = sql.Open("postgres", dsn)
+	return err
+}
+
+func Query(q string, args ...any) (*sql.Rows, error) {
+	return pool.Query(q, args...)
 }
