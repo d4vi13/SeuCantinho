@@ -3,13 +3,16 @@ package routes
 import (
 	"net/http"
 
+	"github.com/d4vi13/SeuCantinho/internal/controller/space"
 	"github.com/d4vi13/SeuCantinho/internal/controller/users"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
 
 	var usersController users.UsersController
+	var spaceController space.SpaceController
 	usersController.Init()
+	spaceController.Init()
 
 	// // B. Obtem todas as reservas
 	// mux.HandleFunc("GET /booking/{$}", GetAllBookings)
@@ -29,8 +32,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// // B. Reserva um espaço
 	// mux.HandleFunc("POST /space/book", BookSpace)
 
-	// // A. Cria um espaço
-	// mux.HandleFunc("POST /space/create", CreateSpace)
+	mux.HandleFunc("POST /space/create", spaceController.CreateUser)
 
 	// // C. Efetua um pagamento
 	// mux.HandleFunc("POST /pix/{key}", MakeFullPix)
