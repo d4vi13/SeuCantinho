@@ -13,9 +13,8 @@ services:
       - DB_HOST=seucantinho_db
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=seucantinho123
-      - DB_DBNAME=seucantinho_db
-      - SSL_MODE=disable
+      - DB_PASS=seucantinho123
+      - DB_NAME=seucantinho_db
   seucantinho_db:
     image: postgres:17
     container_name: seucantinho_db
