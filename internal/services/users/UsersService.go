@@ -9,6 +9,7 @@ const (
 	UserCreated = iota
 	UserFound
 	UserNotFound
+	UserAuthenticated
 	WrongPassword
 	InternalError
 )
@@ -31,18 +32,18 @@ func (service *UsersService) GetUserId(username string) int {
 	return user.Id
 }
 
-func (service *UsersService) AuthenticateUser(username string, passHash string) (bool, int) {
+func (service *UsersService) AuthenticateUser(username string, passHash string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
 	if err != nil {
-		return false, UserNotFound
+		return UserNotFound
 	}
 
 	if user.PassHash != passHash {
-		return false, WrongPassword
+		return WrongPassword
 	}
 
-	return true, 0
+	return UserAuthenticated
 }
 
 func (service *UsersService) UserIsAdmin(username string) bool {
