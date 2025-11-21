@@ -9,6 +9,7 @@ const (
 	UserCreated = iota
 	UserFound
 	UserNotFound
+	UserAuthenticated
 	WrongPassword
 	InternalError
 )
@@ -31,18 +32,18 @@ func (service *UsersService) GetUserId(username string) int {
 	return user.Id
 }
 
-func (service *UsersService) AuthenticateUser(username string, passHash string) (bool, int) {
+func (service *UsersService) AuthenticateUser(username string, passHash string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
 	if err != nil {
-		return false, UserNotFound
+		return UserNotFound
 	}
 
 	if user.PassHash != passHash {
-		return false, WrongPassword
+		return WrongPassword
 	}
 
-	return true, 0
+	return UserAuthenticated
 }
 
 func (service *UsersService) UserIsAdmin(username string) bool {
@@ -55,7 +56,7 @@ func (service *UsersService) UserIsAdmin(username string) bool {
 	return user.IsAdmin
 }
 
-func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (*models.User, int) {
+func (service *UsersService) CreateUser(username string, passHash string) (*models.User, int) {
 
 	// Verifica se o usuário já existe
 	user, _ := service.usersRepository.GetUserByName(username)
@@ -66,7 +67,7 @@ func (service *UsersService) CreateUser(username string, passHash string, isAdmi
 	user = &models.User{
 		Username: username,
 		PassHash: passHash,
-		IsAdmin:  isAdmin,
+		IsAdmin:  false,
 	}
 
 	// Insere o novo usuário no banco de dados
@@ -77,10 +78,6 @@ func (service *UsersService) CreateUser(username string, passHash string, isAdmi
 	}
 
 	// Retorna o modelo do novo usuário
-	return &models.User{
-		Id:       id,
-		Username: username,
-		PassHash: passHash,
-		IsAdmin:  isAdmin,
-	}, UserCreated
+	user.Id = id
+	return user, UserCreated
 }

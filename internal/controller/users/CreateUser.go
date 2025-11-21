@@ -19,7 +19,7 @@ func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Req
 	defer r.Body.Close()
 
 	// Chama o serviço para criar o usuário
-	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Passhash, userReq.IsAdmin)
+	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Passhash)
 
 	// Trata retornos
 	w.Header().Set("Content-Type", "application/json")
