@@ -9,6 +9,7 @@ type CreateRequestSpace struct {
 	Substation string  `json:"substation"`
 	Price      float64 `json:"price"`
 	Capacity   int     `json:"capacity"`
+	PNGBytes   []byte  `json:"png"`
 }
 
 type SpaceController struct {

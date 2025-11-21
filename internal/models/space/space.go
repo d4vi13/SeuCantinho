@@ -1,11 +1,7 @@
 package models
 
-import (
-	"image"
-)
-
 type Photo struct {
-	img image.Image
+	img []byte
 }
 
 type Space struct {

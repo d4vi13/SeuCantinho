@@ -48,6 +48,7 @@ Class Space {
     - string substation
     - double price
     - int capacity
+    - Photo photo
 }
 
 Class User {
@@ -55,6 +56,10 @@ Class User {
     - string username
     - string passHash
     - bool isAdmin
+}
+
+Class Photo {
+    - byte[] img
 }
 
 Class BookingController {
@@ -127,6 +132,7 @@ UsersService --> User : "Cria / usa"
 
 SpaceRepository -d-> Space : "Retorna"
 UsersRepository --> User : "Retorna"
+Space -d-> Photo : "Usa"
 
 PixController --> PixService : "Chama métodos"
 PixService -r-> PixRepository : "Chama métodos"
