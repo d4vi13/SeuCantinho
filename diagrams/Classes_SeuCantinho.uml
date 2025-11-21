@@ -9,7 +9,7 @@ Class SpaceController {
 Class SpaceService {
     - UsersService usersService
     - SpaceRepository spaceRepository
-    + Space CreateSpace(location, substation, price, capacity, photo)
+    + Space CreateSpace(location, substation, price, capacity)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
 }
@@ -48,7 +48,6 @@ Class Space {
     - string substation
     - double price
     - int capacity
-    - Photo photo
 }
 
 Class User {
@@ -56,10 +55,6 @@ Class User {
     - string username
     - string passHash
     - bool isAdmin
-}
-
-Class Photo {
-    - image img
 }
 
 Class BookingController {
@@ -132,7 +127,6 @@ UsersService --> User : "Cria / usa"
 
 SpaceRepository -d-> Space : "Retorna"
 UsersRepository --> User : "Retorna"
-Space -d-> Photo : "Usa"
 
 PixController --> PixService : "Chama métodos"
 PixService -r-> PixRepository : "Chama métodos"
