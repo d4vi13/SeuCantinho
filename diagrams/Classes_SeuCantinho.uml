@@ -31,8 +31,9 @@ Class UsersService {
 }
 
 Class UsersRepository {
-    + bool SaveUser(user)
+    + bool Insert(user)
     + User GetUserById(userId)
+    + User GetUserByName(username)
 }
 
 Class SpaceRepository {

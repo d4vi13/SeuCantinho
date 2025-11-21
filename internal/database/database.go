@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-  _ "github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 var pool *sql.DB
@@ -27,4 +27,8 @@ func Connect() error {
 
 func Query(q string, args ...any) (*sql.Rows, error) {
 	return pool.Query(q, args...)
+}
+
+func QueryRow(q string, args ...any) *sql.Row {
+	return pool.QueryRow(q, args...)
 }

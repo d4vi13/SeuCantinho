@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/d4vi13/SeuCantinho/internal/routes"
 	"github.com/d4vi13/SeuCantinho/internal/database"
+	"github.com/d4vi13/SeuCantinho/internal/routes"
 )
 
 func main() {
@@ -20,10 +20,10 @@ func main() {
 
 	routes.RegisterRoutes(mux)
 
-  err := database.Connect()
+	err := database.Connect()
 	if err != nil {
 		log.Fatal(err)
-  }
+	}
 
 	fmt.Printf("Starting server %s", *addr)
 	err = http.ListenAndServe(*addr, mux)

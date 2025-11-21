@@ -2,24 +2,51 @@ package users
 
 import (
 	models "github.com/d4vi13/SeuCantinho/internal/models/users"
+	"github.com/d4vi13/SeuCantinho/internal/repository/users"
 )
 
-var globalID int = 0
+const (
+	UserCreated = iota
+	UserExists
+	InternalError
+)
 
 type UsersService struct {
+	usersRepository users.UsersRepository
 }
 
-func (service *UsersService) Init() {}
+func (service *UsersService) Init() {
+	service.usersRepository.Init()
+}
 
-func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (models.User, int) {
+func (service *UsersService) CreateUser(username string, passHash string, isAdmin bool) (*models.User, int) {
 
-	user := models.User{
-		Id:       globalID,
+	// Verifica se o usuário já existe
+	user, _ := service.usersRepository.GetUserByName(username)
+	if user != nil {
+		return user, UserExists
+	}
+
+	user = &models.User{
 		Username: username,
 		PassHash: passHash,
 		IsAdmin:  isAdmin,
 	}
-	globalID++
 
-	return user, 0
+	// Insere o novo usuário no banco de dados
+	id, err := service.usersRepository.Insert(user)
+
+	if err != nil {
+		return nil, InternalError
+	}
+
+	// Retorna o modelo do novo usuário
+	return &models.User{
+		Id:       id,
+		Username: username,
+		PassHash: passHash,
+		IsAdmin:  isAdmin,
+	}, UserCreated
 }
+
+func (service *UsersService) AuthenticateUser(username string) bool { return true }
