@@ -92,5 +92,7 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 
 	// Retorna o modelo do novo usuário
 	user.Id = id
+
+	fmt.Printf("UserService: User created\n")
 	return user, UserCreated
 }

@@ -28,6 +28,7 @@ func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Req
 	case svc.UserCreated:
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(user)
+		fmt.Printf("INFO: User %s created succesfuly\n", userReq.Username)
 	case svc.UserFound:
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user already exists"})
