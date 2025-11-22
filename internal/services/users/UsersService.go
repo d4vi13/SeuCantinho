@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	models "github.com/d4vi13/SeuCantinho/internal/models/users"
 	"github.com/d4vi13/SeuCantinho/internal/repository/users"
 	"golang.org/x/crypto/bcrypt"
@@ -63,12 +65,14 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 	// Verifica se o usuário já existe
 	user, _ := service.usersRepository.GetUserByName(username)
 	if user != nil {
+		fmt.Printf("UserService: User Already Exists\n")
 		return user, UserFound
 	}
 
 	// Gera hash da senha
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		fmt.Printf("%v\n", err)
 		return nil, InternalError
 	}
 
@@ -82,6 +86,7 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 	id, err := service.usersRepository.Insert(user)
 
 	if err != nil {
+		fmt.Printf("%v\n", err)
 		return nil, InternalError
 	}
 
