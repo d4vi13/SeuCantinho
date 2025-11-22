@@ -12,6 +12,7 @@ const (
 	SpaceCreated = iota
 	SpaceFound
 	SpaceNotFound
+	UserNotFound
 	InvalidAdmin
 	InternalError
 )
@@ -29,8 +30,13 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 
 	// Verifica se o usuário existe
 	var ret int = service.userService.AuthenticateUser(username, password)
-	if ret != users.UserAuthenticated {
+	if ret == users.UserNotFound {
 		fmt.Printf("SpaceService: User Not Found\n")
+		return nil, UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		fmt.Printf("SpaceService: Wrong Password\n")
 		return nil, InvalidAdmin
 	}
 
