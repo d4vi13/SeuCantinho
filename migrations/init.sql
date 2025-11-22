@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS spaces (
 );
 
 INSERT INTO users (username, pass_hash, is_admin)
-VALUES ('DonaMaria', 'SeuCantinho123', TRUE)
+VALUES ('DonaMaria', '$2a$10$lAxZ5mptOG9SyHr.5KuzpuNWl6MzdvOgxhUD.GJG9aZ4cQwvEC9qC', TRUE)
 ON CONFLICT (username) DO NOTHING;

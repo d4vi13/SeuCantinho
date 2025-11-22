@@ -2,6 +2,7 @@ package users
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	svc "github.com/d4vi13/SeuCantinho/internal/services/users"
@@ -19,7 +20,7 @@ func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Req
 	defer r.Body.Close()
 
 	// Chama o serviço para criar o usuário
-	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Passhash)
+	user, ret := controller.usersService.CreateUser(userReq.Username, userReq.Password)
 
 	// Trata retornos
 	w.Header().Set("Content-Type", "application/json")
@@ -30,11 +31,15 @@ func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Req
 	case svc.UserFound:
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user already exists"})
+		fmt.Printf("INFO: User %s already exists\n", userReq.Username)
 	case svc.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+		fmt.Printf("ERROR: Internal Server Error\n")
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
+		fmt.Printf("ERROR: Internal Server Error\n")
 	}
+
 }

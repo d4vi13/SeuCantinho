@@ -1,8 +1,11 @@
 package users
 
 import (
+	"fmt"
+
 	models "github.com/d4vi13/SeuCantinho/internal/models/users"
 	"github.com/d4vi13/SeuCantinho/internal/repository/users"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -32,14 +35,15 @@ func (service *UsersService) GetUserId(username string) int {
 	return user.Id
 }
 
-func (service *UsersService) AuthenticateUser(username string, passHash string) int {
+func (service *UsersService) AuthenticateUser(username string, password string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
 	if err != nil {
 		return UserNotFound
 	}
 
-	if user.PassHash != passHash {
+	err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(password))
+	if err != nil {
 		return WrongPassword
 	}
 
@@ -56,24 +60,33 @@ func (service *UsersService) UserIsAdmin(username string) bool {
 	return user.IsAdmin
 }
 
-func (service *UsersService) CreateUser(username string, passHash string) (*models.User, int) {
+func (service *UsersService) CreateUser(username string, password string) (*models.User, int) {
 
 	// Verifica se o usuário já existe
 	user, _ := service.usersRepository.GetUserByName(username)
 	if user != nil {
+		fmt.Printf("UserService: User Already Exists\n")
 		return user, UserFound
+	}
+
+	// Gera hash da senha
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return nil, InternalError
 	}
 
 	user = &models.User{
 		Username: username,
-		PassHash: passHash,
-		IsAdmin:  false,
+		PassHash: string(hashedPass),
+		IsAdmin:  true,
 	}
 
 	// Insere o novo usuário no banco de dados
 	id, err := service.usersRepository.Insert(user)
 
 	if err != nil {
+		fmt.Printf("%v\n", err)
 		return nil, InternalError
 	}
 
