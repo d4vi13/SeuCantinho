@@ -15,6 +15,7 @@ const (
 	UserNotFound
 	InvalidAdmin
 	InternalError
+	SpaceDeleted
 )
 
 type SpaceService struct {
@@ -75,4 +76,15 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 
 	fmt.Printf("SpaceService: Space created\n")
 	return space, SpaceCreated
+}
+
+func (service *SpaceService) DeleteSpace(spaceID int) int {
+
+	err := service.spaceRepository.Delete(spaceID)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return SpaceNotFound
+	}
+
+	return SpaceDeleted
 }

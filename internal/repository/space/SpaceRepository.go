@@ -45,3 +45,24 @@ func (repository *SpaceRepository) Insert(space *models.Space) (int, error) {
 
 	return id, nil
 }
+
+func (repository *SpaceRepository) Delete(id int) error {
+	// Statement para deletar um espaço
+	query := `DELETE FROM spaces WHERE id = $1 RETURNING id`
+
+	rows, err := database.Query(query, id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var deletedId int
+		if err := rows.Scan(&deletedId); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return errors.New("space not found")
+}

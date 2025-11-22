@@ -34,6 +34,8 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	mux.HandleFunc("POST /space", spaceController.CreateSpace)
 
+	mux.HandleFunc("DELETE /space/{id}", spaceController.DeleteSpace)
+
 	// // C. Efetua um pagamento
 	// mux.HandleFunc("POST /pix/{key}", MakeFullPix)
 

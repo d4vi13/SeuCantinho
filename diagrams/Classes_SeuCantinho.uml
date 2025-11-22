@@ -12,6 +12,7 @@ Class SpaceService {
     + Space CreateSpace(username, passHash, location, substation, price, capacity)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
+    + int DeleteSpace(spaceID)
 }
 
 Class UsersControllers {
