@@ -39,4 +39,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// mux.HandleFunc("POST /pix/signal/{key}", MakePartialPix)
 
 	mux.HandleFunc("POST /users", usersController.CreateUser)
+
+	mux.HandleFunc("POST /login", usersController.UserLogin)
+
 }
