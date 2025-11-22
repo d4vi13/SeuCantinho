@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (username, pass_hash, is_admin)
-VALUES ('DonaMaria', '$2a$10$lAxZ5mptOG9SyHr.5KuzpuNWl6MzdvOgxhUD.GJG9aZ4cQwvEC9qC', TRUE)
+VALUES ('DonaMaria', '$2a$10$Kpbi/0XjbrAcD0C5bxcM.OO4hISNQWqAHA3pYSD10ypvJhKyEYzYW', TRUE)
 ON CONFLICT (username) DO NOTHING;
