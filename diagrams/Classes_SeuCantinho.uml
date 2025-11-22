@@ -26,9 +26,9 @@ Class UsersControllers {
 Class UsersService {
     - UsersRepository usersRepository
     + int GetUserId(username)
-    + bool AuthenticateUser(username, passHash)
+    + bool AuthenticateUser(username, password)
     + bool UserIsAdmin(userId)
-    + bool CreateUser(username, passHash, isAdmin)
+    + bool CreateUser(username, password, isAdmin)
 }
 
 Class UsersRepository {
