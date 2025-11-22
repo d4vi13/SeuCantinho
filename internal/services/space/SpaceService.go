@@ -88,6 +88,7 @@ func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
 	}
 
 	if len(spaces) == 0 {
+		fmt.Printf("SpaceService: Spaces not found\n")
 		return nil, SpacesNotFound
 	}
 
