@@ -25,10 +25,10 @@ func (service *SpaceService) Init() {
 	service.spaceRepository.Init()
 }
 
-func (service *SpaceService) CreateSpace(username, passHash, location, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
+func (service *SpaceService) CreateSpace(username, password, location, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
 
 	// Verifica se o usuário existe
-	var ret int = service.userService.AuthenticateUser(username, passHash)
+	var ret int = service.userService.AuthenticateUser(username, password)
 	if ret != users.UserAuthenticated {
 		fmt.Printf("SpaceService: User Not Found\n")
 		return nil, InvalidAdmin

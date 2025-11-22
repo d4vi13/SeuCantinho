@@ -20,7 +20,7 @@ func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Re
 	defer r.Body.Close()
 
 	// Chama o serviço para criar o espaço
-	space, ret := controller.spaceService.CreateSpace(spaceReq.Username, spaceReq.Passhash, spaceReq.Location,
+	space, ret := controller.spaceService.CreateSpace(spaceReq.Username, spaceReq.Password, spaceReq.Location,
 		spaceReq.Substation, spaceReq.Price, spaceReq.Capacity, spaceReq.PNGBytes)
 
 	// Trata valores de retorno
