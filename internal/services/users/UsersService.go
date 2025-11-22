@@ -79,7 +79,7 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 	user = &models.User{
 		Username: username,
 		PassHash: string(hashedPass),
-		IsAdmin:  true,
+		IsAdmin:  false,
 	}
 
 	// Insere o novo usuário no banco de dados
