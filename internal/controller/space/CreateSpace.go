@@ -29,6 +29,7 @@ func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Re
 	case svc.SpaceCreated:
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(space)
+		fmt.Printf("INFO: Space %s [%s] created succesfuly\n", spaceReq.Location, space.Substation)
 	case svc.UserNotFound:
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})

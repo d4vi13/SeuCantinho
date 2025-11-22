@@ -73,5 +73,6 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 	// Retorna o modelo do novo espaço
 	space.Id = id
 
+	fmt.Printf("SpaceService: Space created\n")
 	return space, SpaceCreated
 }
