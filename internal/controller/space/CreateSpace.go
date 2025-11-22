@@ -2,6 +2,7 @@ package space
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
@@ -10,6 +11,7 @@ import (
 func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq CreateRequestSpace
 
+	// Faz o parsing da requisição
 	err := json.NewDecoder(r.Body).Decode(&spaceReq)
 	if err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -17,16 +19,32 @@ func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Re
 	}
 	defer r.Body.Close()
 
-	ret := controller.spaceService.CreateSpace(spaceReq.Username, spaceReq.Passhash, spaceReq.Location,
+	// Chama o serviço para criar o espaço
+	space, ret := controller.spaceService.CreateSpace(spaceReq.Username, spaceReq.Passhash, spaceReq.Location,
 		spaceReq.Substation, spaceReq.Price, spaceReq.Capacity, spaceReq.PNGBytes)
 
+	// Trata valores de retorno
 	w.Header().Set("Content-Type", "application/json")
-	if ret == svc.SpaceCreated {
-		w.WriteHeader(http.StatusAccepted)
-		json.NewEncoder(w).Encode(spaceReq)
-
-	} else {
+	switch ret {
+	case svc.SpaceCreated:
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(space)
+	case svc.InvalidAdmin:
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "user is not an admin"})
+		fmt.Printf("INFO: User %s is not an Admin\n", spaceReq.Username)
+	case svc.SpaceFound:
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(map[string]string{"error": "space already exists"})
+		fmt.Printf("INFO: Space %s [%s] already exists\n", spaceReq.Location, spaceReq.Substation)
+	case svc.InternalError:
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+		fmt.Printf("ERROR: Internal Server Error\n")
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
+		fmt.Printf("ERROR: Unknown Status\n")
 	}
 
 }
