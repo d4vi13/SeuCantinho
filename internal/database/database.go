@@ -32,3 +32,7 @@ func Query(q string, args ...any) (*sql.Rows, error) {
 func QueryRow(q string, args ...any) *sql.Row {
 	return pool.QueryRow(q, args...)
 }
+
+func Exec(q string, args ...any) (sql.Result, error) {
+	return pool.Exec(q, args...)
+}

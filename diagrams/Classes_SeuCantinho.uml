@@ -41,6 +41,7 @@ Class SpaceRepository {
     - Database db
     + int, error Insert(space)
     + Space GetSpaceById(id)
+    + error Update(space)
     + Space[] GetAllSpaces()
 }
 

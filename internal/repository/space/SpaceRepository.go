@@ -67,5 +67,11 @@ func (repository *SpaceRepository) Insert(space *models.Space) (int, error) {
 }
 
 func (repository *SpaceRepository) Update(space *models.Space) error {
+	query := `UPDATE spaces SET location = $1, substation = $2, price = $3, capacity = $4, image = $5 WHERE id = $6`
+	_, err := database.Exec(query, space.Location, space.Substation, space.Price, space.Capacity, space.Img, space.Id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

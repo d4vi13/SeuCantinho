@@ -1,7 +1,6 @@
 package space
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,61 +20,21 @@ func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	spaceReq.Location = ""
+	spaceReq.Substation = ""
+	spaceReq.Price = -1
+	spaceReq.Capacity = -1
+	spaceReq.PNGBytes = nil
+
 	// Faz o parsing da requisição
-	var body map[string]interface{}
-	err = json.NewDecoder(r.Body).Decode(&body)
+	err = json.NewDecoder(r.Body).Decode(&spaceReq)
 	if err != nil {
 		fmt.Printf("ERROR: %+v\n", err)
 		return
 	}
 
-	username := body["username"].(string)
-	password := body["password"].(string)
-
-	location, hasLocation := body["location"]
-	substation, hasSubstation := body["substation"]
-	price, hasPrice := body["price"]
-	capacity, hasCapacity := body["capacity"]
-
-	img, hasImg := body["img"]
-
-	if !hasLocation {
-		location = ""
-	}
-
-	if !hasSubstation {
-		substation = ""
-	}
-
-	if !hasPrice {
-		price = -1
-	}
-
-	if !hasCapacity {
-		capacity = -1
-	}
-
-	if hasImg {
-		imgStr, ok := img.(string)
-		if !ok {
-			http.Error(w, "img must be a base64 string", http.StatusBadRequest)
-			return
-		}
-
-		decoded, err := base64.StdEncoding.DecodeString(imgStr)
-		if err != nil {
-			http.Error(w, "invalid base64 image", http.StatusBadRequest)
-			return
-		}
-
-		img = decoded
-	} else {
-		img = nil
-	}
-
 	// Chama o serviço para criar o espaço
-	space, ret := controller.spaceService.UpdateSpace(id, username, password, location.(string),
-		substation.(string), price.(float64), capacity.(int), img.([]byte))
+	space, ret := controller.spaceService.UpdateSpace(id, spaceReq.Username, spaceReq.Password, spaceReq.Location, spaceReq.Substation, spaceReq.Price, spaceReq.Capacity, spaceReq.PNGBytes)
 
 	// Trata valores de retorno
 	w.Header().Set("Content-Type", "application/json")
@@ -96,6 +55,10 @@ func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "wrong password"})
 		fmt.Printf("ERROR: The password for User %s is incorrect.\n", spaceReq.Username)
+	case svc.SpaceNotFound:
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "space not found"})
+		fmt.Printf("ERROR: Space %d not found\n", id)
 	case svc.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
