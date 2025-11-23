@@ -1,6 +1,7 @@
 package space
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,16 +22,60 @@ func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Re
 	}
 
 	// Faz o parsing da requisição
-	err = json.NewDecoder(r.Body).Decode(&spaceReq)
+	var body map[string]interface{}
+	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		fmt.Printf("ERROR: %+v\n", err)
 		return
 	}
-	defer r.Body.Close()
+
+	username := body["username"].(string)
+	password := body["password"].(string)
+
+	location, hasLocation := body["location"]
+	substation, hasSubstation := body["substation"]
+	price, hasPrice := body["price"]
+	capacity, hasCapacity := body["capacity"]
+
+	img, hasImg := body["img"]
+
+	if !hasLocation {
+		location = ""
+	}
+
+	if !hasSubstation {
+		substation = ""
+	}
+
+	if !hasPrice {
+		price = -1
+	}
+
+	if !hasCapacity {
+		capacity = -1
+	}
+
+	if hasImg {
+		imgStr, ok := img.(string)
+		if !ok {
+			http.Error(w, "img must be a base64 string", http.StatusBadRequest)
+			return
+		}
+
+		decoded, err := base64.StdEncoding.DecodeString(imgStr)
+		if err != nil {
+			http.Error(w, "invalid base64 image", http.StatusBadRequest)
+			return
+		}
+
+		img = decoded
+	} else {
+		img = nil
+	}
 
 	// Chama o serviço para criar o espaço
-	space, ret := controller.spaceService.UpdateSpace(id, spaceReq.Username, spaceReq.Password, spaceReq.Location,
-		spaceReq.Substation, spaceReq.Price, spaceReq.Capacity, spaceReq.PNGBytes)
+	space, ret := controller.spaceService.UpdateSpace(id, username, password, location.(string),
+		substation.(string), price.(float64), capacity.(int), img.([]byte))
 
 	// Trata valores de retorno
 	w.Header().Set("Content-Type", "application/json")

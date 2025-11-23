@@ -99,5 +99,38 @@ func (service *SpaceService) UpdateSpace(spaceId int, username string, password 
 		return nil, InvalidAdmin
 	}
 
-	return nil, 0
+	space, err := service.spaceRepository.GetSpaceById(spaceId)
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return nil, SpaceNotFound
+	}
+
+	if len(location) > 0 {
+		space.Location = location
+	}
+
+	if len(substation) > 0 {
+		space.Substation = substation
+	}
+
+	if price != -1 {
+		space.Price = price
+	}
+
+	if capacity != -1 {
+		space.Capacity = capacity
+	}
+
+	if img != nil {
+		space.Img = img
+	}
+
+	err = service.spaceRepository.Update(space)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	return space, SpaceUpdated
 }

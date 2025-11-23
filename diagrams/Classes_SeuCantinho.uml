@@ -32,14 +32,14 @@ Class UsersService {
 }
 
 Class UsersRepository {
-    + bool Insert(user)
+    + int, error Insert(user)
     + User GetUserById(userId)
     + User GetUserByName(username)
 }
 
 Class SpaceRepository {
     - Database db
-    + bool SaveSpace(space)
+    + int, error Insert(space)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
 }
