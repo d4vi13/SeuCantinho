@@ -2,6 +2,7 @@
 Class SpaceController {
     - SpaceService spaceService
     + void CreateSpace(req)
+    + void UpdateSpace(req)
     + void GetSpaceById(req)
     + void GetAllSpaces(req)
 }
@@ -9,7 +10,8 @@ Class SpaceController {
 Class SpaceService {
     - UsersService usersService
     - SpaceRepository spaceRepository
-    + Space CreateSpace(username, passHash, location, substation, price, capacity)
+    + Space CreateSpace(username, password, location, substation, price, capacity, img)
+    + void UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
 }

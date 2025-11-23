@@ -4,15 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
 )
 
-func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Request) {
+func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace
 
+	// Parsing do id do espaço
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if (err != nil) || (id < 1) {
+		http.NotFound(w, r)
+		fmt.Printf("Failed to parsing req\n")
+		return
+	}
+
 	// Faz o parsing da requisição
-	err := json.NewDecoder(r.Body).Decode(&spaceReq)
+	err = json.NewDecoder(r.Body).Decode(&spaceReq)
 	if err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
@@ -20,16 +29,16 @@ func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Re
 	defer r.Body.Close()
 
 	// Chama o serviço para criar o espaço
-	space, ret := controller.spaceService.CreateSpace(spaceReq.Username, spaceReq.Password, spaceReq.Location,
+	space, ret := controller.spaceService.UpdateSpace(id, spaceReq.Username, spaceReq.Password, spaceReq.Location,
 		spaceReq.Substation, spaceReq.Price, spaceReq.Capacity, spaceReq.PNGBytes)
 
 	// Trata valores de retorno
 	w.Header().Set("Content-Type", "application/json")
 	switch ret {
-	case svc.SpaceCreated:
+	case svc.SpaceUpdated:
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(space)
-		fmt.Printf("INFO: Space %s [%s] created succesfuly\n", spaceReq.Location, space.Substation)
+		fmt.Printf("INFO: Space %s [%s] updated succesfuly\n", spaceReq.Location, space.Substation)
 	case svc.UserNotFound:
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
@@ -38,10 +47,10 @@ func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user is not an admin"})
 		fmt.Printf("INFO: User %s is not an Admin\n", spaceReq.Username)
-	case svc.SpaceFound:
-		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(map[string]string{"error": "space already exists"})
-		fmt.Printf("INFO: Space %s [%s] already exists\n", spaceReq.Location, spaceReq.Substation)
+	case svc.WrongPassword:
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "wrong password"})
+		fmt.Printf("ERROR: The password for User %s is incorrect.\n", spaceReq.Username)
 	case svc.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
