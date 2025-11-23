@@ -4,7 +4,7 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/internal/services/users"
 )
 
-type CreateRequestUser struct {
+type RequestUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

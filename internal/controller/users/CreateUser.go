@@ -9,7 +9,7 @@ import (
 )
 
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var userReq CreateRequestUser
+	var userReq RequestUser
 
 	// Faz o parsing na requisição
 	err := json.NewDecoder(r.Body).Decode(&userReq)
