@@ -5,14 +5,17 @@ import (
 
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/space"
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/controller/bookings"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
 
 	var usersController users.UsersController
 	var spaceController space.SpaceController
+	var bookingsController bookings.BookingsController
 	usersController.Init()
 	spaceController.Init()
+	bookingsController.Init()
 
 	// // B. Obtem todas as reservas
 	// mux.HandleFunc("GET /booking/{$}", GetAllBookings)
@@ -28,7 +31,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /space/{id}", spaceController.GetSpaceById)
 
 	// // B. Reserva um espaço
-	// mux.HandleFunc("POST /space/book", BookSpace)
+	 mux.HandleFunc("POST /bookings", bookingsController.BookSpace)
 
 	mux.HandleFunc("POST /space", spaceController.CreateSpace)
 
