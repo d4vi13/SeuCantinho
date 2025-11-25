@@ -45,3 +45,31 @@ func (repository *BookingsRepository) Insert(booking *models.Booking) (int, erro
 	return id, nil
 }
 
+func (repository *BookingsRepository) GetAllBookings() ([]models.Booking, error) {
+	bookings := make([]models.Booking, 0)
+
+	query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings ORDER BY id`
+	rows, err := database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var booking models.Booking
+		err := rows.Scan(&booking.Id, &booking.SpaceId, &booking.UserId, &booking.Start, &booking.End)
+		if err != nil {
+			return nil, err
+		}
+
+		bookings = append(bookings, booking)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+

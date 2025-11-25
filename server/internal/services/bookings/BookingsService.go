@@ -9,6 +9,7 @@ import (
 const (
   BookingCreated = iota
   BookingConflict
+  BookingNotFound
   BadBooking
   InternalError
   Success
@@ -55,4 +56,19 @@ func (service *BookingsService) BookSpace(userId int, spaceId int, start int64, 
 	}
 
 	return id, Success
+}
+
+func (service *BookingsService) GetAllBookings() ([]models.Booking, int) {
+	bookings, err := service.bookingsRepository.GetAllBookings()
+	if err != nil {
+		log.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	if len(bookings) == 0 {
+		log.Printf("Bookings not found\n")
+		return nil, BookingNotFound
+	}
+
+	return bookings, Success
 }
