@@ -6,8 +6,7 @@ import (
 
 type CreateRequestUser struct {
 	Username string `json:"username"`
-	Passhash string `json:"password"`
-	IsAdmin  bool   `json:"isAdmin"`
+	Password string `json:"password"`
 }
 
 type UsersController struct {
