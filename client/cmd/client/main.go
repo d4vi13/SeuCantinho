@@ -34,7 +34,6 @@ func main() {
 	num, _ := strconv.Atoi(trimmedInput)
 	switch num {
 	case 1:
-
 		fmt.Printf("Usuário: ")
 		username, err := reader.ReadString('\n')
 		if err != nil {
@@ -48,6 +47,9 @@ func main() {
 			fmt.Println("Erro ao ler entrada: ", err)
 			return
 		}
+
+		username = username[:len(username)-1]
+		password = password[:len(password)-1]
 
 		login.Login(username, password)
 	case 2:
