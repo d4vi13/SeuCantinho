@@ -152,18 +152,82 @@ func GetAllSpaces() {
 		return
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&spaces); err != nil {
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&spaces); err != nil {
+			panic(err)
+		}
+
+		for _, s := range spaces {
+			fmt.Println("========================")
+			fmt.Println("ID: ", s.ID)
+			fmt.Println("Localização: ", s.Location)
+			fmt.Println("Filial: ", s.Substation)
+			fmt.Println("Preço (R$): ", s.Price)
+			fmt.Println("Capacidade (Pessoas): ", s.Capacity)
+			fmt.Println("========================")
+		}
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
+func DeleteSpace(username string, password string) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Printf("ID do Espaço: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	url := fmt.Sprintf("http://server:8080/space/%d", id)
+
+	payload := map[string]interface{}{
+		"username": username,
+		"password": password,
+	}
+
+	jsonData, _ := json.Marshal(payload)
+	req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(jsonData))
+	if err != nil {
 		panic(err)
 	}
 
-	for _, s := range spaces {
-		fmt.Println("========================")
-		fmt.Println("ID: ", s.ID)
-		fmt.Println("Localização: ", s.Location)
-		fmt.Println("Filial: ", s.Substation)
-		fmt.Println("Preço (R$): ", s.Price)
-		fmt.Println("Capacidade (Pessoas): ", s.Capacity)
-		fmt.Println("========================")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("O Espaço não foi encontrado\n")
+		return
 	}
 
+	if resp.StatusCode == http.StatusBadRequest {
+		fmt.Printf("A senha do administrador está incorreta\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		fmt.Printf("O Espaço foi deletado com sucesso\n")
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
 }

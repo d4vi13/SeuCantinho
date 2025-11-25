@@ -48,6 +48,11 @@ func (session *AdminSession) Handler(opt int) int {
 		return 1
 	}
 
+	if opt == 4 {
+		DeleteSpace(session.Data.User.Username, session.Data.User.Password)
+		return 1
+	}
+
 	return 0
 }
 
