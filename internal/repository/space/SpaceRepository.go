@@ -32,12 +32,12 @@ func (repository *SpaceRepository) GetSpace(location string, substation string) 
 	return space, nil
 }
 
-func (repository *SpaceRepository) GetSpaceById(spaceId int) (*models.Space, error) {
+func (repository *SpaceRepository) GetSpaceById(id int) (*models.Space, error) {
 	// Statement para consultar um espaço no banco
 	query := `SELECT id, location, substation, price, capacity, image FROM spaces WHERE id = $1`
 	space := &models.Space{}
 
-	row := database.QueryRow(query, spaceId)
+	row := database.QueryRow(query, id)
 
 	err := row.Scan(&space.Id, &space.Location, &space.Substation, &space.Price, &space.Capacity, &space.Img)
 	if err != nil {
@@ -64,6 +64,16 @@ func (repository *SpaceRepository) Insert(space *models.Space) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (repository *SpaceRepository) Update(space *models.Space) error {
+	query := `UPDATE spaces SET location = $1, substation = $2, price = $3, capacity = $4, image = $5 WHERE id = $6`
+	_, err := database.Exec(query, space.Location, space.Substation, space.Price, space.Capacity, space.Img, space.Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repository *SpaceRepository) GetAllSpaces() ([]models.Space, error) {

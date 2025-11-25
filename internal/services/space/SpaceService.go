@@ -17,6 +17,8 @@ const (
 	UserNotFound
 	InvalidAdmin
 	InternalError
+	WrongPassword
+	SpaceUpdated
 	SpaceDeleted
 	WrongPassword
 )
@@ -53,7 +55,7 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 
 	if ret == users.WrongPassword {
 		fmt.Printf("SpaceService: Wrong Password\n")
-		return nil, InvalidAdmin
+		return nil, WrongPassword
 	}
 
 	// Verifica se o usuário é um administrador
@@ -94,7 +96,6 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 }
 
 func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
-
 	spaces, err := service.spaceRepository.GetAllSpaces()
 	if err != nil {
 		fmt.Printf("%+v\n", err)
@@ -105,15 +106,17 @@ func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
 		fmt.Printf("SpaceService: Spaces not found\n")
 		return nil, SpacesNotFound
 	}
-
+ 
+  return spaces, SpacesFound
+}
 
 func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
-
 	// Verifica se o usuário existe
 	var ret int = service.userService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
 		fmt.Printf("SpaceService: User Not Found\n")
 		return UserNotFound
+
 	}
 
 	if ret == users.WrongPassword {
@@ -135,4 +138,60 @@ func (service *SpaceService) DeleteSpace(spaceID int, username string, password 
 	}
 
 	return SpaceDeleted
+}
+
+func (service *SpaceService) UpdateSpace(spaceId int, username string, password string, location string, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
+	// Verifica se o usuário existe
+	var ret int = service.userService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		fmt.Printf("SpaceService: User Not Found\n")
+		return nil, UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		fmt.Printf("SpaceService: Wrong Password\n")
+		return nil, WrongPassword
+	}
+
+	// Verifica se o usuário é um administrador
+	var adm bool = service.userService.UserIsAdmin(username)
+	if !adm {
+		fmt.Printf("SpaceService: User isn't an Admin\n")
+		return nil, InvalidAdmin
+	}
+
+	space, err := service.spaceRepository.GetSpaceById(spaceId)
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return nil, SpaceNotFound
+	}
+
+	if len(location) > 0 {
+		space.Location = location
+	}
+
+	if len(substation) > 0 {
+		space.Substation = substation
+	}
+
+	if price != -1 {
+		space.Price = price
+	}
+
+	if capacity != -1 {
+		space.Capacity = capacity
+	}
+
+	if img != nil {
+		space.Img = img
+	}
+
+	err = service.spaceRepository.Update(space)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	return space, SpaceUpdated
 }
