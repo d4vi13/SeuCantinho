@@ -27,22 +27,22 @@ type User struct {
 	Password string
 }
 
-type Session struct {
+type SessionData struct {
 	Status  int
 	User    User
 	IsAdmin bool
 }
 
-func Login(username string, password string) *Session {
-	session := &Session{}
+func Login(username string, password string) *SessionData {
+	data := &SessionData{}
 	var req Request
 
-	session.User.Username = username
-	session.User.Password = password
+	data.User.Username = username
+	data.User.Password = password
 
 	payload := map[string]interface{}{
-		"username": session.User.Username,
-		"password": session.User.Password,
+		"username": data.User.Username,
+		"password": data.User.Password,
 	}
 
 	jsonData, _ := json.Marshal(payload)
@@ -52,16 +52,16 @@ func Login(username string, password string) *Session {
 	}
 	defer resp.Body.Close()
 
-	session.User.Id = -1
+	data.User.Id = -1
 
 	if resp.StatusCode == http.StatusNotFound {
-		session.Status = UserNotFound
-		return session
+		data.Status = UserNotFound
+		return data
 	}
 
 	if resp.StatusCode == http.StatusBadRequest {
-		session.Status = WrongPassword
-		return session
+		data.Status = WrongPassword
+		return data
 
 	}
 
@@ -71,28 +71,28 @@ func Login(username string, password string) *Session {
 			panic(err)
 		}
 
-		session.User.Id = req.ID
-		session.IsAdmin = req.IsAdmin
-		session.Status = Online
+		data.User.Id = req.ID
+		data.IsAdmin = req.IsAdmin
+		data.Status = Online
 
-		return session
+		return data
 	}
 
-	session.Status = Unknown
+	data.Status = Unknown
 
-	return session
+	return data
 }
 
-func CreateUser(username string, password string) *Session {
-	session := &Session{}
+func CreateUser(username string, password string) *SessionData {
+	data := &SessionData{}
 	var req Request
 
-	session.User.Username = username
-	session.User.Password = password
+	data.User.Username = username
+	data.User.Password = password
 
 	payload := map[string]interface{}{
-		"username": session.User.Username,
-		"password": session.User.Password,
+		"username": data.User.Username,
+		"password": data.User.Password,
 	}
 
 	jsonData, _ := json.Marshal(payload)
@@ -102,11 +102,11 @@ func CreateUser(username string, password string) *Session {
 	}
 	defer resp.Body.Close()
 
-	session.User.Id = -1
+	data.User.Id = -1
 
 	if resp.StatusCode == http.StatusConflict {
-		session.Status = Conflict
-		return session
+		data.Status = Conflict
+		return data
 
 	}
 
@@ -116,14 +116,14 @@ func CreateUser(username string, password string) *Session {
 			panic(err)
 		}
 
-		session.User.Id = req.ID
-		session.IsAdmin = req.IsAdmin
-		session.Status = Online
+		data.User.Id = req.ID
+		data.IsAdmin = req.IsAdmin
+		data.Status = Online
 
-		return session
+		return data
 	}
 
-	session.Status = Unknown
+	data.Status = Unknown
 
-	return session
+	return data
 }

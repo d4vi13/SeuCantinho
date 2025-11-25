@@ -8,12 +8,14 @@ import (
 	"strconv"
 	"strings"
 
-	login "github.com/d4vi13/SeuCantinho/client/internal"
+	internal "github.com/d4vi13/SeuCantinho/client/internal"
 )
 
 var reader *bufio.Reader
+var data *internal.SessionData
 
 func main() {
+	var opt int
 	fmt.Printf("==== Cliente Seu Cantinho ===\n")
 	reader = bufio.NewReader(os.Stdin)
 
@@ -51,24 +53,23 @@ func main() {
 		username = username[:len(username)-1]
 		password = password[:len(password)-1]
 
-		session := login.Login(username, password)
+		data = internal.Login(username, password)
 
-		if session.Status == login.UserNotFound {
+		if data.Status == internal.UserNotFound {
 			fmt.Printf("O usuário %s não existe\n", username)
 			return
 		}
 
-		if session.Status == login.WrongPassword {
+		if data.Status == internal.WrongPassword {
 			fmt.Printf("Senha incorreta\n")
 			return
 		}
 
-		if session.Status == login.Unknown {
+		if data.Status == internal.Unknown {
 			fmt.Printf("Houve um erro desconhecido no servidor\n")
 			return
 		}
 
-		fmt.Printf("Usuário %s conectado\n", username)
 	case 2:
 		fmt.Printf("Usuário: ")
 		username, err := reader.ReadString('\n')
@@ -100,35 +101,44 @@ func main() {
 			return
 		}
 
-		session := login.CreateUser(username, password)
+		data = internal.CreateUser(username, password)
 
-		if session.Status == login.Conflict {
+		if data.Status == internal.Conflict {
 			fmt.Printf("Já existe um usuário com esse nome\n")
 			return
 		}
 
-		if session.Status == login.Unknown {
+		if data.Status == internal.Unknown {
 			fmt.Printf("Houve um erro desconhecido no servidor\n")
 			return
 		}
-		fmt.Printf("Usuário %s conectado\n", username)
 
 	default:
 		return
 	}
 
-	// for {
-	// 	fmt.Print("Digite algo: ")
-	// 	text, err := reader.ReadString('\n')
-	// 	if err != nil {
-	// 		fmt.Println("Erro na leitura:", err)
-	// 		return
-	// 	}
-	// 	text = text[:len(text)-1] // remove o `\n`
-	// 	if text == "exit" {
-	// 		fmt.Println("Saindo...")
-	// 		break
-	// 	}
-	// 	fmt.Println("Você digitou:", text)
-	// }
+	fmt.Printf("Usuário %s conectado\n", data.User.Username)
+	var session internal.Session
+
+	if data.IsAdmin {
+		session = &internal.AdminSession{}
+	} else {
+		session = &internal.ClientSession{}
+	}
+
+	opt = 1
+	for opt != 0 {
+		session.ShowOptions()
+		fmt.Printf("Selecione uma opção: ")
+
+		input, err := reader.ReadString('\n')
+		if err != nil && err != io.EOF {
+			fmt.Println("Erro ao ler entrada: ", err)
+			return
+		}
+
+		trimmedInput := strings.TrimSpace(input)
+		num, _ = strconv.Atoi(trimmedInput)
+		opt = session.Handler(num)
+	}
 }
