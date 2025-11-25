@@ -15,16 +15,18 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	booking, ret := controller.bookingsService.BookSpace(req.Username, req.Space, req.Start, req.End)
+	id, ret := controller.bookingsService.BookSpace(req.Username, req.Space, req.Start, req.End)
 
 	switch ret {
 	case bookings.BookingCreated:
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, "New Booking: %+v\n", booking)
-	case bookings.UnavailableDate:
+	case bookings.BookingConflict:
 		w.WriteHeader(http.StatusConflict)
 		fmt.Fprintf(w, "User already exists")
 	case booking.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
+  // TODO use booking id to create a payment 
 }
