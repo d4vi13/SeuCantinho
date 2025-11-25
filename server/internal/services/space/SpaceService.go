@@ -43,6 +43,17 @@ func (service *SpaceService) GetSpaceById(spaceId int) (*models.Space, int) {
 	return space, SpaceFound
 }
 
+func (service *SpaceService) ComputeBookingPrice(spaceId int, Duration int64) (float64, int) {
+	space, err := service.spaceRepository.GetSpaceById(spaceId)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return 0, SpaceNotFound
+	}
+  
+  value := space.Price * float64(Duration / (60 * 60 * 24))
+
+	return value, SpaceFound
+}
 func (service *SpaceService) CreateSpace(username, password, location, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
 
 	// Verifica se o usuário existe

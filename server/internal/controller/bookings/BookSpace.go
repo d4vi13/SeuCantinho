@@ -6,6 +6,7 @@ import (
   "net/http"
   "github.com/d4vi13/SeuCantinho/server/internal/services/users"
   "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
+  "github.com/d4vi13/SeuCantinho/server/internal/services/payments"
 )
 
 func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.Request) {
@@ -47,34 +48,40 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
   var bookingId int
   bookingId, ret = controller.bookingsService.BookSpace(userId, req.SpaceId, req.Start, req.End)
 
-  /*
-  if ret == bookings.BookingCreated {
-    // creates a payment for the booking created
+  fmt.Printf("INFO: Booking %d created \n", bookingId)
+
+  if ret == bookings.Success {
     var paymentId int
-    paymentId, ret := controller.paymentsService.CreatePayment(id, value)
-    if ret == payments.PaymentCreated {
-
-    } else {
-
+    var value float64
+    value, _ = controller.spaceService.ComputeBookingPrice(req.SpaceId, req.End - req.Start)
+    fmt.Printf("INFO: Booking Value %f\n", value)
+    paymentId, ret = controller.paymentsService.CreatePayment(bookingId, value)
+    switch ret {
+    case payments.Success:
+      w.WriteHeader(http.StatusCreated)
+      json.NewEncoder(w).Encode(map[string]int{"id": paymentId})
+      fmt.Printf("INFO: Booking %d created succesfuly\n", bookingId)
+    default:
+      controller.bookingsService.CancelBookingById(bookingId)
+      w.WriteHeader(http.StatusInternalServerError)
+      json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
+      fmt.Printf("ERROR: Unknown Status\n")
+    }
+  } else {
+    fmt.Printf("INFO: other if\n")
+    switch ret {
+    case bookings.BookingConflict:
+      w.WriteHeader(http.StatusConflict)
+      json.NewEncoder(w).Encode(map[string]string{"error": "booking conflict"})
+      fmt.Printf("INFO: Booking Conflitc\n")
+    case bookings.InternalError:
+      w.WriteHeader(http.StatusInternalServerError)
+      json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+      fmt.Printf("ERROR: Internal Server Error\n")
+    case bookings.BadBooking:
+      w.WriteHeader(http.StatusBadRequest)
+      json.NewEncoder(w).Encode(map[string]string{"error": "invalid booking attempted"})
+      fmt.Printf("ERROR: Invalid Booking Attempted\n")
     }
   }
-
-} else {
-  */
-  switch ret {
-  case bookings.BookingCreated:
-    w.WriteHeader(http.StatusCreated)
-    fmt.Fprintf(w, "New Booking: %d\n", bookingId)
-  case bookings.BookingConflict:
-    w.WriteHeader(http.StatusConflict)
-    fmt.Fprintf(w, "Booking Conflict")
-  case bookings.InternalError:
-    w.WriteHeader(http.StatusInternalServerError)
-  case bookings.BadBooking:
-    w.WriteHeader(http.StatusBadRequest)
-    fmt.Fprintf(w, "Invalid Booking")
-
-  }
-
-  // TODO use booking id to create a payment 
 }

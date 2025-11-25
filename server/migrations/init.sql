@@ -22,6 +22,12 @@ CREATE TABLE IF NOT EXISTS bookings (
     bookingEnd BIGINT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS payments (
+    id INTEGER PRIMARY KEY REFERENCES bookings(id) ON DELETE CASCADE,
+    totalValue DOUBLE PRECISION NOT NULL,
+    payedValue DOUBLE PRECISION NOT NULL
+);
+
 INSERT INTO users (username, pass_hash, is_admin)
 VALUES ('DonaMaria', '$2a$10$Kpbi/0XjbrAcD0C5bxcM.OO4hISNQWqAHA3pYSD10ypvJhKyEYzYW', TRUE)
 ON CONFLICT (username) DO NOTHING;
