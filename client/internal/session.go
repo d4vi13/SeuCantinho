@@ -7,8 +7,12 @@ type Session interface {
 	Handler(opt int) int
 }
 
-type AdminSession struct{}
-type ClientSession struct{}
+type AdminSession struct {
+	Data *SessionData
+}
+type ClientSession struct {
+	Data *SessionData
+}
 
 func (session *AdminSession) ShowOptions() {
 	fmt.Printf("0- Encerrar Execução\n")
@@ -32,6 +36,11 @@ func (session *ClientSession) ShowOptions() {
 func (session *AdminSession) Handler(opt int) int {
 	if opt == 0 {
 		return 0
+	}
+
+	if opt == 1 {
+		CreateSpace(session.Data.User.Username, session.Data.User.Password)
+		return 1
 	}
 
 	if opt == 3 {

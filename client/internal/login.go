@@ -33,6 +33,14 @@ type SessionData struct {
 	IsAdmin bool
 }
 
+func (user *User) GetUsername() string {
+	return user.Username
+}
+
+func (user *User) GetPassword() string {
+	return user.Password
+}
+
 func Login(username string, password string) *SessionData {
 	data := &SessionData{}
 	var req Request

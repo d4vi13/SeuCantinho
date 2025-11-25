@@ -11,13 +11,12 @@ import (
 	internal "github.com/d4vi13/SeuCantinho/client/internal"
 )
 
-var reader *bufio.Reader
 var data *internal.SessionData
 
 func main() {
 	var opt int
 	fmt.Printf("==== Cliente Seu Cantinho ===\n")
-	reader = bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Printf("1- Login\n")
 	fmt.Printf("2- Criar Usuário\n")
@@ -117,13 +116,14 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Usuário %s conectado\n", data.User.Username)
+	fmt.Printf("Usuário %s conectado\n\n", data.User.GetUsername())
+
 	var session internal.Session
 
 	if data.IsAdmin {
-		session = &internal.AdminSession{}
+		session = &internal.AdminSession{Data: data}
 	} else {
-		session = &internal.ClientSession{}
+		session = &internal.ClientSession{Data: data}
 	}
 
 	opt = 1
@@ -137,8 +137,10 @@ func main() {
 			return
 		}
 
+		fmt.Println()
 		trimmedInput := strings.TrimSpace(input)
 		num, _ = strconv.Atoi(trimmedInput)
 		opt = session.Handler(num)
+		fmt.Println()
 	}
 }
