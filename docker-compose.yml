@@ -1,7 +1,8 @@
 services:
+
   server:
-    build:  
-      context: .
+    build: 
+      context: ./server
       dockerfile: Dockerfile
     container_name: seucantinho_backend
     depends_on: 
@@ -15,6 +16,7 @@ services:
       - DB_USER=postgres
       - DB_PASS=seucantinho123
       - DB_NAME=seucantinho_db
+
   seucantinho_db:
     image: postgres:17
     container_name: seucantinho_db
@@ -26,4 +28,4 @@ services:
      - "5432:5432"
     volumes:
      - ./data:/var/lib/postgresql/data
-     - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+     - ./server/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
