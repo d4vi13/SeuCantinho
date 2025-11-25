@@ -14,6 +14,26 @@ CREATE TABLE IF NOT EXISTS spaces (
     image BYTEA
 );
 
+CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    spaceId INTEGER NOT NULL REFERENCES spaces(id),
+    userId INTEGER NOT NULL REFERENCES users(id),
+    bookingStart BIGINT NOT NULL,
+    bookingEnd BIGINT NOT NULL
+);
+
 INSERT INTO users (username, pass_hash, is_admin)
 VALUES ('DonaMaria', '$2a$10$Kpbi/0XjbrAcD0C5bxcM.OO4hISNQWqAHA3pYSD10ypvJhKyEYzYW', TRUE)
 ON CONFLICT (username) DO NOTHING;
+
+
+INSERT INTO spaces (id, location, substation, price, capacity, image)
+VALUES (
+    0,
+    'Teste',
+    'Substation A',
+    99.99,
+    5,
+    NULL
+);
+

@@ -2,19 +2,22 @@ package bookings
 
 import (
 	"github.com/d4vi13/SeuCantinho/internal/services/bookings"
+	"github.com/d4vi13/SeuCantinho/internal/services/users"
 )
 
 type BookSpaceRequest struct {
 	Username string `json:"username"`
-  Space    int    `json:space`
-	Start    int64  `json:start`
-	End      int64  `json:end`
+	Password string `json:"password"`
+  SpaceId    int    `json:space`
+	Start    int64  `json:start` // Unix Time
+	End      int64  `json:end` // Unix Time
 }
 
 type BookingsController struct {
-	BookingsService bookings.BookingsService
+	bookingsService bookings.BookingsService
+	usersService users.UsersService
 }
 
 func (controller *BookingsController) Init() {
-	controller.bookings.Service.Init()
+	controller.bookingsService.Init()
 }

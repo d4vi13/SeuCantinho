@@ -30,7 +30,7 @@ func (service *UsersService) GetUserId(username string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
 	if err != nil {
-		return -1
+		return -1 
 	}
 
 	return user.Id
