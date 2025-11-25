@@ -49,8 +49,8 @@ func main() {
 			return
 		}
 
-		username = username[:len(username)-1]
-		password = password[:len(password)-1]
+		username = strings.TrimSpace(username)
+		password = strings.TrimSpace(password)
 
 		data = internal.Login(username, password)
 
@@ -91,9 +91,9 @@ func main() {
 			return
 		}
 
-		username = username[:len(username)-1]
-		password = password[:len(password)-1]
-		password_repeat = password_repeat[:len(password_repeat)-1]
+		username = strings.TrimSpace(username)
+		password = strings.TrimSpace(password)
+		password_repeat = strings.TrimSpace(password_repeat)
 
 		if password != password_repeat {
 			fmt.Printf("As senhas são diferentes\n")

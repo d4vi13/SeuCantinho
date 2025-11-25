@@ -39,6 +39,7 @@ func CreateSpace(username string, password string) {
 		fmt.Println("Erro ao ler localização")
 		return
 	}
+	location = strings.TrimSpace(location)
 
 	fmt.Printf("Filial: ")
 	substation, err := reader.ReadString('\n')
@@ -46,6 +47,7 @@ func CreateSpace(username string, password string) {
 		fmt.Println("Erro ao ler filial")
 		return
 	}
+	substation = strings.TrimSpace(substation)
 
 	fmt.Printf("Custo de reserva por dia: ")
 	input, err := reader.ReadString('\n')
@@ -75,9 +77,6 @@ func CreateSpace(username string, password string) {
 		return
 	}
 
-	location = location[:len(location)-1]
-	substation = substation[:len(substation)-1]
-
 	payload := map[string]interface{}{
 		"username":   username,
 		"password":   password,
@@ -87,6 +86,7 @@ func CreateSpace(username string, password string) {
 		"capacity":   capacity,
 	}
 
+	// Faz a requisição para o backend
 	jsonData, _ := json.Marshal(payload)
 	resp, err := http.Post("http://server:8080/space", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -94,6 +94,7 @@ func CreateSpace(username string, password string) {
 	}
 	defer resp.Body.Close()
 
+	// Trata valores de retorno
 	if resp.StatusCode == http.StatusBadRequest {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -184,24 +185,24 @@ func UpdateSpace(username string, password string) {
 	priceInput, _ := reader.ReadString('\n')
 	priceInput = strings.TrimSpace(priceInput)
 	if priceInput != "" {
-		p, err := strconv.ParseFloat(priceInput, 64)
+		price, err := strconv.ParseFloat(priceInput, 64)
 		if err != nil {
 			fmt.Println("Preço inválido")
 			return
 		}
-		req.Price = &p
+		req.Price = &price
 	}
 
 	fmt.Print("Nova capacidade: ")
 	capInput, _ := reader.ReadString('\n')
 	capInput = strings.TrimSpace(capInput)
 	if capInput != "" {
-		c, err := strconv.Atoi(capInput)
+		capacity, err := strconv.Atoi(capInput)
 		if err != nil {
 			fmt.Println("Capacidade inválida")
 			return
 		}
-		req.Capacity = &c
+		req.Capacity = &capacity
 	}
 
 	jsonData, err := json.Marshal(req)
@@ -216,6 +217,7 @@ func UpdateSpace(username string, password string) {
 		panic(err)
 	}
 
+	// Faz a requisição para o backend
 	client := &http.Client{}
 	resp, err := client.Do(requisition)
 	if err != nil {
@@ -223,6 +225,7 @@ func UpdateSpace(username string, password string) {
 	}
 	defer resp.Body.Close()
 
+	// Trata valores de retorno
 	if resp.StatusCode == http.StatusBadRequest {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -268,12 +271,15 @@ func UpdateSpace(username string, password string) {
 
 func GetAllSpaces() {
 	var spaces []RequestSpace
+
+	// Faz a requisição ao backend
 	resp, err := http.Get("http://server:8080/space")
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
 
+	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
 		fmt.Printf("Não existe nenhum espaço\n")
 		return
@@ -334,6 +340,7 @@ func DeleteSpace(username string, password string) {
 		panic(err)
 	}
 
+	// Faz a requisição para o backend
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -341,6 +348,7 @@ func DeleteSpace(username string, password string) {
 	}
 	defer resp.Body.Close()
 
+	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
 		fmt.Printf("O Espaço não foi encontrado\n")
 		return
