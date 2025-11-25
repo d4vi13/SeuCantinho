@@ -3,8 +3,8 @@ package users
 import (
 	"fmt"
 
-	models "github.com/d4vi13/SeuCantinho/internal/models/users"
-	"github.com/d4vi13/SeuCantinho/internal/repository/users"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/repository/users"
 	"golang.org/x/crypto/bcrypt"
 )
 

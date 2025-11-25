@@ -3,9 +3,9 @@ package space
 import (
 	"fmt"
 
-	models "github.com/d4vi13/SeuCantinho/internal/models/space"
-	"github.com/d4vi13/SeuCantinho/internal/repository/space"
-	"github.com/d4vi13/SeuCantinho/internal/services/users"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/space"
+	"github.com/d4vi13/SeuCantinho/server/internal/repository/space"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
 const (

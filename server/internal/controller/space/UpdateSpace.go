@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
+	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
 func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Request) {

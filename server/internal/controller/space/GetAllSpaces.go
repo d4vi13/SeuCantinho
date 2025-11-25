@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
+	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
 func (controller *SpaceController) GetAllSpaces(w http.ResponseWriter, r *http.Request) {

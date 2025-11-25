@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	"github.com/d4vi13/SeuCantinho/internal/controller/space"
-	"github.com/d4vi13/SeuCantinho/internal/controller/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/controller/space"
+	"github.com/d4vi13/SeuCantinho/server/internal/controller/users"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
@@ -33,7 +33,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /space", spaceController.CreateSpace)
 
 	mux.HandleFunc("PUT /space/{id}", spaceController.UpdateSpace)
-  
+
 	mux.HandleFunc("DELETE /space/{id}", spaceController.DeleteSpace)
 
 	// // C. Efetua um pagamento
