@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/d4vi13/SeuCantinho/internal/database"
-	models "github.com/d4vi13/SeuCantinho/internal/models/bookings"
+	"github.com/d4vi13/SeuCantinho/server/internal/database"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
 )
 
 type BookingsRepository struct{}

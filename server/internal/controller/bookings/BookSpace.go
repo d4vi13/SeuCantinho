@@ -4,8 +4,8 @@ import (
   "encoding/json"
   "fmt"
   "net/http"
-  "github.com/d4vi13/SeuCantinho/internal/services/users"
-  "github.com/d4vi13/SeuCantinho/internal/services/bookings"
+  "github.com/d4vi13/SeuCantinho/server/internal/services/users"
+  "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
 )
 
 func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.Request) {

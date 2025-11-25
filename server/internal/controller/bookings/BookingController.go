@@ -1,8 +1,8 @@
 package bookings
 
 import (
-	"github.com/d4vi13/SeuCantinho/internal/services/bookings"
-	"github.com/d4vi13/SeuCantinho/internal/services/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
 type BookSpaceRequest struct {

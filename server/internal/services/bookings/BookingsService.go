@@ -1,8 +1,8 @@
 package bookings
 
 import (
-	models "github.com/d4vi13/SeuCantinho/internal/models/bookings"
-	"github.com/d4vi13/SeuCantinho/internal/repository/bookings"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
+	"github.com/d4vi13/SeuCantinho/server/internal/repository/bookings"
 	"log"
 )
 
