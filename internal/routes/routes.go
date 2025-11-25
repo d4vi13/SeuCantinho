@@ -26,8 +26,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// // B. Obtem todos os espaços (Reservados e Disponíveis)
 	// mux.HandleFunc("GET /space/{$}", GetAllSpaces)
 
-	// // B. Obtem um espaço específico
-	// mux.HandleFunc("GET /space/{id}", GetSpaceById)
+	mux.HandleFunc("GET /space/{id}", spaceController.GetSpaceById)
 
 	// // B. Reserva um espaço
 	// mux.HandleFunc("POST /space/book", BookSpace)

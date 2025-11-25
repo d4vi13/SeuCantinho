@@ -28,6 +28,18 @@ func (service *SpaceService) Init() {
 	service.spaceRepository.Init()
 }
 
+func (service *SpaceService) GetSpaceById(spaceId int) (*models.Space, int) {
+	// Obtém o espaço atravês do Id
+
+	space, err := service.spaceRepository.GetSpaceById(spaceId)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, SpaceNotFound
+	}
+
+	return space, SpaceFound
+}
+
 func (service *SpaceService) CreateSpace(username, password, location, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
 
 	// Verifica se o usuário existe
