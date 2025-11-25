@@ -17,6 +17,14 @@ services:
       - DB_PASS=seucantinho123
       - DB_NAME=seucantinho_db
 
+  client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: seucantinho_client
+    stdin_open: true
+    tty: true
+
   seucantinho_db:
     image: postgres:17
     container_name: seucantinho_db
