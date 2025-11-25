@@ -89,3 +89,22 @@ func (repository *BookingsRepository) GetBookingById(id int) (*models.Booking, e
 	return booking, nil
 }
 
+func (repository *BookingsRepository) Delete(id int) error {
+	query := `DELETE FROM bookings WHERE id = $1 RETURNING id`
+
+	rows, err := database.Query(query, id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var deletedId int
+		if err := rows.Scan(&deletedId); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return errors.New("booking not found")
+}

@@ -73,7 +73,6 @@ func (service *BookingsService) GetAllBookings() ([]models.Booking, int) {
 	return bookings, Success
 }
 
-
 func (service *BookingsService) GetBookingById(bookingId int) (*models.Booking, int) {
 
 	booking, err := service.bookingsRepository.GetBookingById(bookingId)
@@ -85,4 +84,28 @@ func (service *BookingsService) GetBookingById(bookingId int) (*models.Booking, 
 	return booking, Success
 }
 
+func (service *BookingsService) IsBookingOwner(userId, bookingId int) bool {
+
+	booking, err := service.bookingsRepository.GetBookingById(bookingId)
+	if err != nil {
+		log.Printf("%+v\n", err)
+		return false 
+	}
+
+  if booking.UserId != userId {
+    return false
+  }
+
+  return true
+}
+
+func (service *BookingsService) CancelBookingById(bookingId int) int {
+	err := service.bookingsRepository.Delete(bookingId)
+	if err != nil {
+		log.Printf("%+v\n", err)
+		return BookingNotFound
+	}
+
+	return Success
+}
 
