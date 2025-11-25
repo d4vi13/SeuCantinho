@@ -11,7 +11,9 @@ import (
 const (
 	SpaceCreated = iota
 	SpaceFound
+	SpacesFound
 	SpaceNotFound
+	SpacesNotFound
 	UserNotFound
 	InvalidAdmin
 	InternalError
@@ -90,6 +92,20 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 	fmt.Printf("SpaceService: Space created\n")
 	return space, SpaceCreated
 }
+
+func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
+
+	spaces, err := service.spaceRepository.GetAllSpaces()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	if len(spaces) == 0 {
+		fmt.Printf("SpaceService: Spaces not found\n")
+		return nil, SpacesNotFound
+	}
+
 
 func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
 

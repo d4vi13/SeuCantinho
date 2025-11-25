@@ -66,6 +66,36 @@ func (repository *SpaceRepository) Insert(space *models.Space) (int, error) {
 	return id, nil
 }
 
+func (repository *SpaceRepository) GetAllSpaces() ([]models.Space, error) {
+	spaces := make([]models.Space, 0)
+
+	// Statement para obter todos os espaços
+	query := `SELECT id, location, substation, price, capacity, image FROM spaces ORDER BY id`
+	rows, err := database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Insere os espaços em um vetor
+	for rows.Next() {
+		var space models.Space
+		err := rows.Scan(&space.Id, &space.Location, &space.Substation, &space.Price, &space.Capacity, &space.Img)
+		if err != nil {
+			return nil, err
+		}
+
+		spaces = append(spaces, space)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Retorna o vetor
+	return spaces, nil
+}
+  
 func (repository *SpaceRepository) Delete(id int) error {
 	// Statement para deletar um espaço
 	query := `DELETE FROM spaces WHERE id = $1 RETURNING id`

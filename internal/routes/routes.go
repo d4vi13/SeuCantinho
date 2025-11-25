@@ -23,8 +23,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// // B. Cancela uma reserva especifíca
 	// mux.HandleFunc("POST /booking/cancel/{id}", CancelBookingById)
 
-	// // B. Obtem todos os espaços (Reservados e Disponíveis)
-	// mux.HandleFunc("GET /space/{$}", GetAllSpaces)
+	mux.HandleFunc("GET /space/{$}", spaceController.GetAllSpaces)
 
 	mux.HandleFunc("GET /space/{id}", spaceController.GetSpaceById)
 
