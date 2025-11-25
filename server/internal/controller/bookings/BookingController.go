@@ -5,6 +5,11 @@ import (
 	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
+type  AuthRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type BookSpaceRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
