@@ -9,7 +9,7 @@ import (
 )
 
 func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Request) {
-	var spaceReq CreateRequestSpace
+	var spaceReq RequestSpace
 
 	// Faz o parsing da requisição
 	err := json.NewDecoder(r.Body).Decode(&spaceReq)

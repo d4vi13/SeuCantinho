@@ -15,6 +15,8 @@ const (
 	UserNotFound
 	InvalidAdmin
 	InternalError
+	SpaceDeleted
+	WrongPassword
 )
 
 type SpaceService struct {
@@ -75,4 +77,34 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 
 	fmt.Printf("SpaceService: Space created\n")
 	return space, SpaceCreated
+}
+
+func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
+
+	// Verifica se o usuário existe
+	var ret int = service.userService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		fmt.Printf("SpaceService: User Not Found\n")
+		return UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		fmt.Printf("SpaceService: Wrong Password\n")
+		return WrongPassword
+	}
+
+	// Verifica se o usuário é um administrador
+	var adm bool = service.userService.UserIsAdmin(username)
+	if !adm {
+		fmt.Printf("SpaceService: User isn't an Admin\n")
+		return InvalidAdmin
+	}
+
+	err := service.spaceRepository.Delete(spaceID)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return SpaceNotFound
+	}
+
+	return SpaceDeleted
 }
