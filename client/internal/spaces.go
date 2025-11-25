@@ -18,7 +18,15 @@ type RequestSpace struct {
 	Substation string  `json:"substation"`
 	Price      float64 `json:"price"`
 	Capacity   int     `json:"capacity"`
-	PNGBytes   []byte  `json:"Img"`
+}
+
+type SpaceUpdateRequest struct {
+	Username   *string  `json:"username"`
+	Password   *string  `json:"password"`
+	Location   *string  `json:"location,omitempty"`
+	Substation *string  `json:"substation,omitempty"`
+	Price      *float64 `json:"price,omitempty"`
+	Capacity   *int     `json:"capacity,omitempty"`
 }
 
 func CreateSpace(username string, password string) {
@@ -121,6 +129,130 @@ func CreateSpace(username string, password string) {
 
 		fmt.Println()
 		fmt.Println("Espaço criado com sucesso!")
+		fmt.Println("ID: ", space.ID)
+		fmt.Println("Localização: ", space.Location)
+		fmt.Println("Filial: ", space.Substation)
+		fmt.Println("Preço (R$): ", space.Price)
+		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
+		fmt.Println()
+
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
+func UpdateSpace(username string, password string) {
+	req := SpaceUpdateRequest{}
+	space := &RequestSpace{}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("ID do Espaço: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	req.Username = &username
+	req.Password = &password
+
+	fmt.Printf("Para atualizar o campo, insira o novo valor, caso contrário, aperte 'Enter'\n")
+
+	fmt.Print("Nova Localização: ")
+	location, _ := reader.ReadString('\n')
+	location = strings.TrimSpace(location)
+	if location != "" {
+		req.Location = &location
+	}
+
+	fmt.Print("Nova Filial: ")
+	substation, _ := reader.ReadString('\n')
+	substation = strings.TrimSpace(substation)
+	if substation != "" {
+		req.Substation = &substation
+	}
+
+	fmt.Print("Novo custo: ")
+	priceInput, _ := reader.ReadString('\n')
+	priceInput = strings.TrimSpace(priceInput)
+	if priceInput != "" {
+		p, err := strconv.ParseFloat(priceInput, 64)
+		if err != nil {
+			fmt.Println("Preço inválido")
+			return
+		}
+		req.Price = &p
+	}
+
+	fmt.Print("Nova capacidade: ")
+	capInput, _ := reader.ReadString('\n')
+	capInput = strings.TrimSpace(capInput)
+	if capInput != "" {
+		c, err := strconv.Atoi(capInput)
+		if err != nil {
+			fmt.Println("Capacidade inválida")
+			return
+		}
+		req.Capacity = &c
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		panic(err)
+	}
+
+	url := fmt.Sprintf("http://server:8080/space/%d", id)
+
+	requisition, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(requisition)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusBadRequest {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		var data map[string]string
+		if err := json.Unmarshal(body, &data); err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		fmt.Println("Erro:", data["error"])
+
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(space); err != nil {
+			panic(err)
+		}
+
+		fmt.Println()
+		fmt.Println("Espaço atualizado com sucesso!")
 		fmt.Println("ID: ", space.ID)
 		fmt.Println("Localização: ", space.Location)
 		fmt.Println("Filial: ", space.Substation)

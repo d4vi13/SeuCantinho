@@ -43,6 +43,11 @@ func (session *AdminSession) Handler(opt int) int {
 		return 1
 	}
 
+	if opt == 2 {
+		UpdateSpace(session.Data.User.Username, session.Data.User.Password)
+		return 1
+	}
+
 	if opt == 3 {
 		GetAllSpaces()
 		return 1
