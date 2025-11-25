@@ -5,6 +5,7 @@ Class SpaceController {
     + void UpdateSpace(req)
     + void GetSpaceById(req)
     + void GetAllSpaces(req)
+    + void DeleteSpace(req)
 }
 
 Class SpaceService {
@@ -14,6 +15,7 @@ Class SpaceService {
     + void UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
+    + int DeleteSpace(spaceID, username, password)
 }
 
 Class UsersControllers {
@@ -43,6 +45,7 @@ Class SpaceRepository {
     + Space GetSpaceById(id)
     + error Update(space)
     + Space[] GetAllSpaces()
+    + error DeleteSpace(id)
 }
 
 Class Space {

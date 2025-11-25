@@ -11,12 +11,16 @@ import (
 const (
 	SpaceCreated = iota
 	SpaceFound
+	SpacesFound
 	SpaceNotFound
+	SpacesNotFound
 	UserNotFound
 	InvalidAdmin
 	InternalError
 	WrongPassword
 	SpaceUpdated
+	SpaceDeleted
+	WrongPassword
 )
 
 type SpaceService struct {
@@ -26,6 +30,18 @@ type SpaceService struct {
 
 func (service *SpaceService) Init() {
 	service.spaceRepository.Init()
+}
+
+func (service *SpaceService) GetSpaceById(spaceId int) (*models.Space, int) {
+	// Obtém o espaço atravês do Id
+
+	space, err := service.spaceRepository.GetSpaceById(spaceId)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, SpaceNotFound
+	}
+
+	return space, SpaceFound
 }
 
 func (service *SpaceService) CreateSpace(username, password, location, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
@@ -77,6 +93,51 @@ func (service *SpaceService) CreateSpace(username, password, location, substatio
 
 	fmt.Printf("SpaceService: Space created\n")
 	return space, SpaceCreated
+}
+
+func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
+	spaces, err := service.spaceRepository.GetAllSpaces()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	if len(spaces) == 0 {
+		fmt.Printf("SpaceService: Spaces not found\n")
+		return nil, SpacesNotFound
+	}
+ 
+  return spaces, SpacesFound
+}
+
+func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
+	// Verifica se o usuário existe
+	var ret int = service.userService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		fmt.Printf("SpaceService: User Not Found\n")
+		return UserNotFound
+
+	}
+
+	if ret == users.WrongPassword {
+		fmt.Printf("SpaceService: Wrong Password\n")
+		return WrongPassword
+	}
+
+	// Verifica se o usuário é um administrador
+	var adm bool = service.userService.UserIsAdmin(username)
+	if !adm {
+		fmt.Printf("SpaceService: User isn't an Admin\n")
+		return InvalidAdmin
+	}
+
+	err := service.spaceRepository.Delete(spaceID)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return SpaceNotFound
+	}
+
+	return SpaceDeleted
 }
 
 func (service *SpaceService) UpdateSpace(spaceId int, username string, password string, location string, substation string, price float64, capacity int, img []byte) (*models.Space, int) {
