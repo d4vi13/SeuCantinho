@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/d4vi13/SeuCantinho/internal/database"
-	"github.com/d4vi13/SeuCantinho/internal/routes"
+	"github.com/d4vi13/SeuCantinho/server/internal/database"
+	"github.com/d4vi13/SeuCantinho/server/internal/routes"
 )
 
 func main() {

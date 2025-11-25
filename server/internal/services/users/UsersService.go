@@ -3,8 +3,8 @@ package users
 import (
 	"fmt"
 
-	models "github.com/d4vi13/SeuCantinho/internal/models/users"
-	"github.com/d4vi13/SeuCantinho/internal/repository/users"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/repository/users"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -30,7 +30,7 @@ func (service *UsersService) GetUserId(username string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
 	if err != nil {
-		return -1
+		return -1 
 	}
 
 	return user.Id

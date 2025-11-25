@@ -1,7 +1,7 @@
 package space
 
 import (
-	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
+	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
 type RequestSpace struct {

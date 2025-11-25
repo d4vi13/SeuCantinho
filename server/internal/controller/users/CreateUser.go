@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	svc "github.com/d4vi13/SeuCantinho/internal/services/users"
+	svc "github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {

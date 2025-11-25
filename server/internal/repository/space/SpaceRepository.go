@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/d4vi13/SeuCantinho/internal/database"
-	models "github.com/d4vi13/SeuCantinho/internal/models/space"
+	"github.com/d4vi13/SeuCantinho/server/internal/database"
+	models "github.com/d4vi13/SeuCantinho/server/internal/models/space"
 )
 
 type SpaceRepository struct{}
@@ -105,7 +105,7 @@ func (repository *SpaceRepository) GetAllSpaces() ([]models.Space, error) {
 	// Retorna o vetor
 	return spaces, nil
 }
-  
+
 func (repository *SpaceRepository) Delete(id int) error {
 	// Statement para deletar um espaço
 	query := `DELETE FROM spaces WHERE id = $1 RETURNING id`
