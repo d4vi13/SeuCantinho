@@ -17,6 +17,8 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
     return
   }
 
+  w.Header().Set("Content-Type", "application/json")
+  
   ret := controller.usersService.AuthenticateUser(req.Username, req.Password)
   switch ret {
   case users.UserNotFound:
