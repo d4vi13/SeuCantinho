@@ -4,16 +4,14 @@ Class SpaceController {
     + void CreateSpace(req)
     + void GetSpaceById(req)
     + void GetAllSpaces(req)
-    + void GetAllUserSpaces(req)
 }
 
 Class SpaceService {
     - UsersService usersService
     - SpaceRepository spaceRepository
-    + Space CreateSpace(location, substation, price, capacity, photo)
+    + Space CreateSpace(username, passHash, location, substation, price, capacity)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
-    + Space[] GetAllUserSpaces(userId)
 }
 
 Class UsersControllers {
@@ -42,7 +40,6 @@ Class SpaceRepository {
     + bool SaveSpace(space)
     + Space GetSpaceById(id)
     + Space[] GetAllSpaces()
-    + Space[] GetUserSpaces(userId)
 }
 
 Class Space {
@@ -51,7 +48,7 @@ Class Space {
     - string substation
     - double price
     - int capacity
-    - Photo photo
+    - byte[] img
 }
 
 Class User {
@@ -59,10 +56,6 @@ Class User {
     - string username
     - string passHash
     - bool isAdmin
-}
-
-Class Photo {
-    - image img
 }
 
 Class BookingController {
@@ -135,7 +128,6 @@ UsersService --> User : "Cria / usa"
 
 SpaceRepository -d-> Space : "Retorna"
 UsersRepository --> User : "Retorna"
-Space -d-> Photo : "Usa"
 
 PixController --> PixService : "Chama métodos"
 PixService -r-> PixRepository : "Chama métodos"

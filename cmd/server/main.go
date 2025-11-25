@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Starting server %s", *addr)
+	fmt.Printf("Starting server %s\n", *addr)
 	err = http.ListenAndServe(*addr, mux)
 	if err != nil {
 		log.Fatal(err)
