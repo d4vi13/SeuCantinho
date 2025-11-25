@@ -4,7 +4,7 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/internal/services/space"
 )
 
-type CreateRequestSpace struct {
+type RequestSpace struct {
 	Username   string  `json:"username"`
 	Password   string  `json:"password"`
 	Location   string  `json:"location"`

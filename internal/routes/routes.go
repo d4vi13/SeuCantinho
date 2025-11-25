@@ -25,13 +25,14 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	mux.HandleFunc("GET /space/{$}", spaceController.GetAllSpaces)
 
-	// // B. Obtem um espaço específico
-	// mux.HandleFunc("GET /space/{id}", GetSpaceById)
+	mux.HandleFunc("GET /space/{id}", spaceController.GetSpaceById)
 
 	// // B. Reserva um espaço
 	// mux.HandleFunc("POST /space/book", BookSpace)
 
 	mux.HandleFunc("POST /space", spaceController.CreateSpace)
+
+	mux.HandleFunc("DELETE /space/{id}", spaceController.DeleteSpace)
 
 	// // C. Efetua um pagamento
 	// mux.HandleFunc("POST /pix/{key}", MakeFullPix)
@@ -40,4 +41,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// mux.HandleFunc("POST /pix/signal/{key}", MakePartialPix)
 
 	mux.HandleFunc("POST /users", usersController.CreateUser)
+
+	mux.HandleFunc("POST /login", usersController.UserLogin)
+
 }

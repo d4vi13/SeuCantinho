@@ -15,6 +15,7 @@ const (
 	UserAuthenticated
 	WrongPassword
 	InternalError
+	Logged
 )
 
 type UsersService struct {
@@ -60,6 +61,27 @@ func (service *UsersService) UserIsAdmin(username string) bool {
 	return user.IsAdmin
 }
 
+func (service *UsersService) Login(username string, password string) (*models.User, int) {
+	user := &models.User{}
+
+	user, err := service.usersRepository.GetUserByName(username)
+	if err != nil {
+		fmt.Printf("UserService: User not found\n")
+		return nil, UserNotFound
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(password))
+	if err != nil {
+		fmt.Printf("UserService: Wrong password\n")
+		return nil, WrongPassword
+	}
+
+	user.PassHash = "hashed_password"
+	user.IsAdmin = service.UserIsAdmin(username)
+
+	return user, Logged
+}
+
 func (service *UsersService) CreateUser(username string, password string) (*models.User, int) {
 
 	// Verifica se o usuário já existe
@@ -92,5 +114,7 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 
 	// Retorna o modelo do novo usuário
 	user.Id = id
+
+	fmt.Printf("UserService: User created\n")
 	return user, UserCreated
 }

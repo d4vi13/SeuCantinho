@@ -32,6 +32,26 @@ func (repository *SpaceRepository) GetSpace(location string, substation string) 
 	return space, nil
 }
 
+func (repository *SpaceRepository) GetSpaceById(spaceId int) (*models.Space, error) {
+	// Statement para consultar um espaço no banco
+	query := `SELECT id, location, substation, price, capacity, image FROM spaces WHERE id = $1`
+	space := &models.Space{}
+
+	row := database.QueryRow(query, spaceId)
+
+	err := row.Scan(&space.Id, &space.Location, &space.Substation, &space.Price, &space.Capacity, &space.Img)
+	if err != nil {
+		// Espaço não existe no banco de dados
+		if err == sql.ErrNoRows {
+			return nil, errors.New("space not found")
+		}
+		return nil, err
+	}
+
+	// Retorna o objeto do espaço
+	return space, nil
+}
+
 func (repository *SpaceRepository) Insert(space *models.Space) (int, error) {
 	// Statement para inserir um novo espaço
 	query := `INSERT INTO spaces (location, substation, price, capacity, image) VALUES ($1, $2, $3, $4, $5) RETURNING id;`
@@ -74,4 +94,25 @@ func (repository *SpaceRepository) GetAllSpaces() ([]models.Space, error) {
 
 	// Retorna o vetor
 	return spaces, nil
+}
+  
+func (repository *SpaceRepository) Delete(id int) error {
+	// Statement para deletar um espaço
+	query := `DELETE FROM spaces WHERE id = $1 RETURNING id`
+
+	rows, err := database.Query(query, id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var deletedId int
+		if err := rows.Scan(&deletedId); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return errors.New("space not found")
 }
