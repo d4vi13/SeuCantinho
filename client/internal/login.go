@@ -3,8 +3,15 @@ package internal
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
+)
+
+const (
+	Online = iota
+	UserNotFound
+	WrongPassword
+	Conflict
+	Unknown
 )
 
 type Request struct {
@@ -18,11 +25,12 @@ type User struct {
 	Id       int
 	Username string
 	Password string
-	IsAdmin  bool
 }
 
 type Session struct {
-	User User
+	Status  int
+	User    User
+	IsAdmin bool
 }
 
 func Login(username string, password string) *Session {
@@ -44,20 +52,78 @@ func Login(username string, password string) *Session {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println(resp.StatusCode)
+	session.User.Id = -1
 
-	err = json.NewDecoder(resp.Body).Decode(&req)
+	if resp.StatusCode == http.StatusNotFound {
+		session.Status = UserNotFound
+		return session
+	}
+
+	if resp.StatusCode == http.StatusBadRequest {
+		session.Status = WrongPassword
+		return session
+
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		err = json.NewDecoder(resp.Body).Decode(&req)
+		if err != nil {
+			panic(err)
+		}
+
+		session.User.Id = req.ID
+		session.IsAdmin = req.IsAdmin
+		session.Status = Online
+
+		return session
+	}
+
+	session.Status = Unknown
+
+	return session
+}
+
+func CreateUser(username string, password string) *Session {
+	session := &Session{}
+	var req Request
+
+	session.User.Username = username
+	session.User.Password = password
+
+	payload := map[string]interface{}{
+		"username": session.User.Username,
+		"password": session.User.Password,
+	}
+
+	jsonData, _ := json.Marshal(payload)
+	resp, err := http.Post("http://server:8080/users", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
+	defer resp.Body.Close()
 
-	session.User.Id = req.ID
-	session.User.IsAdmin = req.IsAdmin
+	session.User.Id = -1
 
-	fmt.Println("ID: ", req.ID)
-	fmt.Println("Nome: ", req.Username)
-	fmt.Println("Senha: ", req.PassHash)
-	fmt.Println("Admin: ", req.IsAdmin)
+	if resp.StatusCode == http.StatusConflict {
+		session.Status = Conflict
+		return session
+
+	}
+
+	if resp.StatusCode == http.StatusCreated {
+		err = json.NewDecoder(resp.Body).Decode(&req)
+		if err != nil {
+			panic(err)
+		}
+
+		session.User.Id = req.ID
+		session.IsAdmin = req.IsAdmin
+		session.Status = Online
+
+		return session
+	}
+
+	session.Status = Unknown
 
 	return session
 }

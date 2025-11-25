@@ -51,9 +51,68 @@ func main() {
 		username = username[:len(username)-1]
 		password = password[:len(password)-1]
 
-		login.Login(username, password)
+		session := login.Login(username, password)
+
+		if session.Status == login.UserNotFound {
+			fmt.Printf("O usuário %s não existe\n", username)
+			return
+		}
+
+		if session.Status == login.WrongPassword {
+			fmt.Printf("Senha incorreta\n")
+			return
+		}
+
+		if session.Status == login.Unknown {
+			fmt.Printf("Houve um erro desconhecido no servidor\n")
+			return
+		}
+
+		fmt.Printf("Usuário %s conectado\n", username)
 	case 2:
-		fmt.Printf("Criou...\n")
+		fmt.Printf("Usuário: ")
+		username, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Erro ao ler entrada: ", err)
+			return
+		}
+
+		fmt.Printf("Senha: ")
+		password, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Erro ao ler entrada: ", err)
+			return
+		}
+
+		fmt.Printf("Confirme sua senha: ")
+		password_repeat, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Erro ao ler entrada: ", err)
+			return
+		}
+
+		username = username[:len(username)-1]
+		password = password[:len(password)-1]
+		password_repeat = password_repeat[:len(password_repeat)-1]
+
+		if password != password_repeat {
+			fmt.Printf("As senhas são diferentes\n")
+			return
+		}
+
+		session := login.CreateUser(username, password)
+
+		if session.Status == login.Conflict {
+			fmt.Printf("Já existe um usuário com esse nome\n")
+			return
+		}
+
+		if session.Status == login.Unknown {
+			fmt.Printf("Houve um erro desconhecido no servidor\n")
+			return
+		}
+		fmt.Printf("Usuário %s conectado\n", username)
+
 	default:
 		return
 	}
