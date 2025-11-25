@@ -20,7 +20,6 @@ const (
 	WrongPassword
 	SpaceUpdated
 	SpaceDeleted
-	WrongPassword
 )
 
 type SpaceService struct {
@@ -106,8 +105,8 @@ func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
 		fmt.Printf("SpaceService: Spaces not found\n")
 		return nil, SpacesNotFound
 	}
- 
-  return spaces, SpacesFound
+
+	return spaces, SpacesFound
 }
 
 func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
