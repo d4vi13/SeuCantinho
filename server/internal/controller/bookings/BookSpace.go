@@ -54,7 +54,7 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
 
   if ret == bookings.Success {
     var paymentId int
-    var value float64
+    var value int64
     value, _ = controller.spaceService.ComputeBookingPrice(req.SpaceId, req.End - req.Start)
     fmt.Printf("INFO: Booking Value %f\n", value)
     paymentId, ret = controller.paymentsService.CreatePayment(bookingId, value)

@@ -40,3 +40,10 @@ func (repository *PaymentsRepository) GetPaymentById(id int) (*models.Payment, e
 
 	return payment, nil
 }
+
+func (repository *PaymentsRepository) MakePayment(id int, value int64)  error {
+	query := `UPDATE payments SET payedValue = LEAST(payedValue + $2, totalValue) WHERE id = $1 RETURNING id, totalValue, payedValue; `
+
+	_, err := database.Exec(query, id, value)
+	return err
+}
