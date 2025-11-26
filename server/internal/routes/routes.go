@@ -3,10 +3,10 @@ package routes
 import (
 	"net/http"
 
-	"github.com/d4vi13/SeuCantinho/server/internal/controller/space"
-	"github.com/d4vi13/SeuCantinho/server/internal/controller/users"
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/bookings"
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/payments"
+	"github.com/d4vi13/SeuCantinho/server/internal/controller/space"
+	"github.com/d4vi13/SeuCantinho/server/internal/controller/users"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
@@ -20,17 +20,13 @@ func RegisterRoutes(mux *http.ServeMux) {
 	bookingsController.Init()
 	paymentsController.Init()
 
-	// // B. Obtem todas as reservas
 	mux.HandleFunc("GET /bookings", bookingsController.GetAllBookings)
 
-	// // B. Obtem uma reserva especifícia
 	mux.HandleFunc("GET /bookings/{id}", bookingsController.GetBookingById)
 
-	// // B. Cancela uma reserva especifíca
 	mux.HandleFunc("DELETE /bookings/{id}", bookingsController.CancelBookingById)
 
-	// // B. Reserva um espaço
-	 mux.HandleFunc("POST /bookings", bookingsController.BookSpace)
+	mux.HandleFunc("POST /bookings", bookingsController.BookSpace)
 
 	mux.HandleFunc("GET /space/{$}", spaceController.GetAllSpaces)
 
@@ -42,12 +38,12 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	mux.HandleFunc("DELETE /space/{id}", spaceController.DeleteSpace)
 
-	// // C. Efetua um pagamento
-	//mux.HandleFunc("POST /payments/{id}", paymentsController.GetPaymentById)
 	mux.HandleFunc("GET /payments/{id}", paymentsController.GetPaymentById)
 
 	mux.HandleFunc("POST /users", usersController.CreateUser)
 
 	mux.HandleFunc("POST /login", usersController.UserLogin)
+
+	mux.HandleFunc("GET /users/{id}", usersController.GetUserById)
 
 }
