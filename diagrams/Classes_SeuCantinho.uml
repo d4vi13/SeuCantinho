@@ -13,9 +13,9 @@ Class SpaceService {
     - SpaceRepository spaceRepository
     + Space CreateSpace(username, password, location, substation, price, capacity, img)
     + void UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
-    + Space GetSpaceById(id)
+    + Space GetSpaceById(spaceId)
     + Space[] GetAllSpaces()
-    + int DeleteSpace(spaceID, username, password)
+    + int DeleteSpace(spaceId, username, password)
 }
 
 Class UsersControllers {
@@ -23,6 +23,7 @@ Class UsersControllers {
     + void CreateUser(req)
     + void ValidateUser(req)
     + void UserIsAdmin(req)
+    + void GetUserById(req)
 }
 
 Class UsersService {
@@ -31,6 +32,7 @@ Class UsersService {
     + bool AuthenticateUser(username, password)
     + bool UserIsAdmin(userId)
     + bool CreateUser(username, password, isAdmin)
+    + User GetUserById(userId)
 }
 
 Class UsersRepository {
