@@ -5,10 +5,7 @@ import (
 )
 
 type PaymentRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-  Id       int    `json:"id"`
-  Value    int32   `json:space`
+  Value    int64   `json:space`
 }
 
 type PaymentsController struct {

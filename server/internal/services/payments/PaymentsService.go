@@ -10,6 +10,7 @@ const (
   Success = iota
   NotFound
   InternalError
+  InvalidPayment
 )
 
 type PaymentsService struct {
@@ -20,7 +21,7 @@ func (service *PaymentsService) Init() {
 	service.paymentsRepository.Init()
 }
 
-func (service *PaymentsService) CreatePayment(id int, value float64) (int, int) {
+func (service *PaymentsService) CreatePayment(id int, value int64) (int, int) {
 
   payment := &models.Payment{
     Id: id,
@@ -48,13 +49,17 @@ func (service *PaymentsService) GetPaymentById(paymentId int) (*models.Payment, 
 
 	return payment, Success
 }
-func (service *PaymentsService) MakePaymentById(paymentId int) (*models.Payment, int) {
+func (service *PaymentsService) MakePayment(paymentId int, value int64)  int {
 
-	payment, err := service.paymentsRepository.GetPaymentById(paymentId)
+  if value < 0 {
+    return InvalidPayment
+  }
+
+	err := service.paymentsRepository.MakePayment(paymentId, value)
 	if err != nil {
 		log.Printf("%+v\n", err)
-		return nil, NotFound
+		return InvalidPayment
 	}
 
-	return payment, Success
+	return Success
 }
