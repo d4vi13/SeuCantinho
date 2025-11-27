@@ -269,6 +269,61 @@ func UpdateSpace(username string, password string) {
 	fmt.Println("Erro desconhecido")
 }
 
+func GetSpace() {
+	var space RequestSpace
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Printf("ID do Espaço: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	url := fmt.Sprintf("http://server:8080/space/%d", id)
+
+	// Faz a requisição ao backend
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("Esse espaço não existe espaço\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&space); err != nil {
+			panic(err)
+		}
+		fmt.Println("========================")
+		fmt.Println("ID: ", space.ID)
+		fmt.Println("Localização: ", space.Location)
+		fmt.Println("Filial: ", space.Substation)
+		fmt.Println("Preço (R$): ", space.Price)
+		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
+		fmt.Println("========================")
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
 func GetAllSpaces() {
 	var spaces []RequestSpace
 

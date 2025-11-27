@@ -15,22 +15,26 @@ type ClientSession struct {
 }
 
 func (session *AdminSession) ShowOptions() {
-	fmt.Printf("0- Encerrar Execução\n")
-	fmt.Printf("1- Criar Espaço\n")
-	fmt.Printf("2- Atualizar Espaço\n")
-	fmt.Printf("3- Obter todos os espaços\n")
-	fmt.Printf("4- Deletar Espaço\n")
-	fmt.Printf("5- Criar Reserva\n")
-	fmt.Printf("6- Obter todas as reservas\n")
-	fmt.Printf("7- Cancelar Reserva\n")
+	fmt.Printf("0  - Encerrar Execução\n")
+	fmt.Printf("1  - Criar Espaço\n")
+	fmt.Printf("2  - Atualizar Espaço\n")
+	fmt.Printf("3  - Obter Espaço\n")
+	fmt.Printf("4  - Obter todos os espaços\n")
+	fmt.Printf("5  - Deletar Espaço\n")
+	fmt.Printf("6  - Obter Usuário\n")
+	fmt.Printf("7  - Obter todos os usuários\n")
+	fmt.Printf("8  - Deletar Usuário")
+	fmt.Printf("9  - Criar Reserva\n")
+	fmt.Printf("10  - Obter todas as reservas\n")
+	fmt.Printf("11 - Cancelar Reserva\n")
 }
 
 func (session *ClientSession) ShowOptions() {
-	fmt.Printf("0- Encerrar Execução\n")
-	fmt.Printf("1- Obter todos os espaços\n")
-	fmt.Printf("2- Criar Reserva\n")
-	fmt.Printf("3- Obter todas as reservas\n")
-	fmt.Printf("4- Cancelar Reserva\n")
+	fmt.Printf("0 - Encerrar Execução\n")
+	fmt.Printf("1 - Obter todos os espaços\n")
+	fmt.Printf("2 - Criar Reserva\n")
+	fmt.Printf("3 - Obter todas as reservas\n")
+	fmt.Printf("4 - Cancelar Reserva\n")
 }
 
 func (session *AdminSession) Handler(opt int) int {
@@ -49,11 +53,16 @@ func (session *AdminSession) Handler(opt int) int {
 	}
 
 	if opt == 3 {
-		GetAllSpaces()
+		GetSpace()
 		return 1
 	}
 
 	if opt == 4 {
+		GetAllSpaces()
+		return 1
+	}
+
+	if opt == 5 {
 		DeleteSpace(session.Data.User.Username, session.Data.User.Password)
 		return 1
 	}
