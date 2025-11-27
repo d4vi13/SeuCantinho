@@ -108,3 +108,30 @@ func (repository *BookingsRepository) Delete(id int) error {
 
 	return errors.New("booking not found")
 }
+func (repository *BookingsRepository) GetUserBookings(userId int) ([]models.Booking, error) {
+	bookings := make([]models.Booking, 0)
+  query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings WHERE userId = $1 ORDER BY id;`
+	rows, err := database.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var booking models.Booking
+		err := rows.Scan(&booking.Id, &booking.SpaceId, &booking.UserId, &booking.Start, &booking.End)
+		if err != nil {
+			return nil, err
+		}
+
+		bookings = append(bookings, booking)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}
+
+

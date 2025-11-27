@@ -172,3 +172,41 @@ func (service *BookingsService) CancelBookingById(username string, password stri
 	return Success
 }
 
+func (service *BookingsService) GetUserBookings(userId int, username string, password string)  ([]models.Booking, int) {
+
+  _, ret := service.usersService.GetUserById(userId)
+  if ret == users.UserNotFound {
+		log.Printf("BookingsService: User Not Found\n")
+		return nil, UserNotFound
+	}
+
+  ret = service.usersService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		log.Printf("BookingsService: User Not Found\n")
+		return nil, UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		log.Printf("BookingsService: Wrong Password\n")
+		return nil, WrongPassword
+	}
+
+  requesterId := service.usersService.GetUserId(username)
+	if userId == -1 {
+		log.Printf("BookingsService: User Not Found\n")
+		return nil, UserNotFound
+	}
+
+  if !service.usersService.UserIsAdmin(username) && !(userId != requesterId) {
+    return nil, Unauthorized
+  }
+
+  bookings, err := service.bookingsRepository.GetUserBookings(userId)
+	if err != nil {
+		log.Printf("%+v\n", err)
+		return nil, BookingNotFound
+	}
+
+	return bookings, Success
+}
+
