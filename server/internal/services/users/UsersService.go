@@ -15,8 +15,11 @@ const (
 	UserNotFound
 	UsersNotFound
 	UserAuthenticated
+	InvalidAdmin
+	InvalidDelete
 	WrongPassword
 	InternalError
+	UserDeleted
 	Logged
 )
 
@@ -68,6 +71,16 @@ func (service *UsersService) AuthenticateUser(username string, password string) 
 func (service *UsersService) UserIsAdmin(username string) bool {
 
 	user, err := service.usersRepository.GetUserByName(username)
+	if err != nil {
+		return false
+	}
+
+	return user.IsAdmin
+}
+
+func (service *UsersService) IsThisAnAdminId(userId int) bool {
+
+	user, err := service.usersRepository.GetUserById(userId)
 	if err != nil {
 		return false
 	}
@@ -141,9 +154,45 @@ func (service *UsersService) GetAllUsers() ([]models.User, int) {
 	}
 
 	if len(users) == 0 {
-		fmt.Printf("UsersService: Spaces not found\n")
+		fmt.Printf("UsersService: Users not found\n")
 		return nil, UsersNotFound
 	}
 
 	return users, UsersFound
+}
+
+func (service *UsersService) DeleteUser(userId int, username string, password string) int {
+	// Verifica se o usuário existe
+	var ret int = service.AuthenticateUser(username, password)
+	if ret == UserNotFound {
+		fmt.Printf("UsersService: User Not Found\n")
+		return UserNotFound
+	}
+
+	if ret == WrongPassword {
+		fmt.Printf("UsersService: Wrong Password\n")
+		return WrongPassword
+	}
+
+	var adm bool = service.IsThisAnAdminId(userId)
+	if adm {
+		fmt.Printf("UsersService: It is not possible to delete an administrator user\n")
+		return InvalidDelete
+	}
+
+	// Verifica se o usuário é um administrador
+	adm = service.UserIsAdmin(username)
+	if !adm {
+		fmt.Printf("UsersService: User isn't an Admin\n")
+		return InvalidAdmin
+	}
+
+	err := service.usersRepository.Delete(userId)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return InternalError
+	}
+
+	return UserDeleted
+
 }

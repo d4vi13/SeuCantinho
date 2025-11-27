@@ -49,8 +49,8 @@ func (service *SpaceService) ComputeBookingPrice(spaceId int, Duration int64) (i
 		fmt.Printf("%+v\n", err)
 		return 0, SpaceNotFound
 	}
-  
-  value := space.Price * int64(Duration / (60 * 60 * 24))
+
+	value := space.Price * int64(Duration/(60*60*24))
 
 	return value, SpaceFound
 }
@@ -120,7 +120,7 @@ func (service *SpaceService) GetAllSpaces() ([]models.Space, int) {
 	return spaces, SpacesFound
 }
 
-func (service *SpaceService) DeleteSpace(spaceID int, username string, password string) int {
+func (service *SpaceService) DeleteSpace(spaceId int, username string, password string) int {
 	// Verifica se o usuário existe
 	var ret int = service.userService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
@@ -141,7 +141,7 @@ func (service *SpaceService) DeleteSpace(spaceID int, username string, password 
 		return InvalidAdmin
 	}
 
-	err := service.spaceRepository.Delete(spaceID)
+	err := service.spaceRepository.Delete(spaceId)
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 		return SpaceNotFound

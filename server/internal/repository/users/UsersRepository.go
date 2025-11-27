@@ -95,3 +95,24 @@ func (repository *UsersRepository) GetAllUsers() ([]models.User, error) {
 	// Retorna o vetor
 	return users, nil
 }
+
+func (repository *UsersRepository) Delete(id int) error {
+	// Statement para deletar um usuário
+	query := `DELETE FROM users WHERE id = $1 RETURNING id`
+
+	rows, err := database.Query(query, id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		var deletedId int
+		if err := rows.Scan(&deletedId); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return errors.New("user not found")
+}

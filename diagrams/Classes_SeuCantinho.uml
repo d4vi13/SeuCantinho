@@ -25,6 +25,7 @@ Class UsersControllers {
     + void UserIsAdmin(req)
     + void GetUserById(req)
     + void GetAllUsers(req)
+    + void DeleteUser(req)
 }
 
 Class UsersService {
@@ -35,6 +36,7 @@ Class UsersService {
     + bool CreateUser(username, password, isAdmin)
     + User GetUserById(userId)
     + User[] GetAllUsers()
+    + bool DeleteUser(userId, username, password)
 }
 
 Class UsersRepository {
@@ -42,6 +44,7 @@ Class UsersRepository {
     + User GetUserById(userId)
     + User GetUserByName(username)
     + User[] GetAllUsers()
+    + int DeleteUser(userId)
 }
 
 Class SpaceRepository {
