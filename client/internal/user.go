@@ -19,10 +19,10 @@ type RequestUser struct {
 }
 
 func GetUser() {
-	var space RequestSpace
+	var user RequestUser
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Printf("ID do Espaço: ")
+	fmt.Printf("ID do Usuário: ")
 	input, err := reader.ReadString('\n')
 	if err != nil && err != io.EOF {
 		fmt.Println("Erro ao ler entrada: ", err)
@@ -36,7 +36,7 @@ func GetUser() {
 		return
 	}
 
-	url := fmt.Sprintf("http://server:8080/space/%d", id)
+	url := fmt.Sprintf("http://server:8080/users/%d", id)
 
 	// Faz a requisição ao backend
 	resp, err := http.Get(url)
@@ -47,7 +47,7 @@ func GetUser() {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
-		fmt.Printf("Esse espaço não existe espaço\n")
+		fmt.Printf("Esse usuário não existe\n")
 		return
 	}
 
@@ -57,15 +57,14 @@ func GetUser() {
 	}
 
 	if resp.StatusCode == http.StatusOK {
-		if err := json.NewDecoder(resp.Body).Decode(&space); err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
 			panic(err)
 		}
 		fmt.Println("========================")
-		fmt.Println("ID: ", space.ID)
-		fmt.Println("Localização: ", space.Location)
-		fmt.Println("Filial: ", space.Substation)
-		fmt.Println("Preço (R$): ", space.Price)
-		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
+		fmt.Println("ID: ", user.ID)
+		fmt.Println("Username: ", user.Username)
+		fmt.Println("PassHash: ", user.PassHash)
+		fmt.Println("Is Admin?: ", user.IsAdmin)
 		fmt.Println("========================")
 		return
 	}

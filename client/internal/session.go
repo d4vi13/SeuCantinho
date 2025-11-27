@@ -67,6 +67,11 @@ func (session *AdminSession) Handler(opt int) int {
 		return 1
 	}
 
+	if opt == 6 {
+		GetUser()
+		return 1
+	}
+
 	return 0
 }
 

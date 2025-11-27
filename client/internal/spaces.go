@@ -34,6 +34,7 @@ func CreateSpace(username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
 	var space RequestSpace
 
+	fmt.Println("Criação de Espaço")
 	fmt.Printf("Localização do Espaço: ")
 	location, err := reader.ReadString('\n')
 	if err != nil {
@@ -150,6 +151,7 @@ func UpdateSpace(username string, password string) {
 	space := &RequestSpace{}
 
 	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Atualização de Espaço")
 	fmt.Printf("ID do Espaço: ")
 	input, err := reader.ReadString('\n')
 	if err != nil && err != io.EOF {
@@ -301,7 +303,7 @@ func GetSpace() {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
-		fmt.Printf("Esse espaço não existe espaço\n")
+		fmt.Printf("Esse espaço não existe\n")
 		return
 	}
 
@@ -371,6 +373,7 @@ func GetAllSpaces() {
 func DeleteSpace(username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
 
+	fmt.Println("Deleção de Espaço de Espaço")
 	fmt.Printf("ID do Espaço: ")
 	input, err := reader.ReadString('\n')
 	if err != nil && err != io.EOF {
