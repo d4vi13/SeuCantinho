@@ -5,13 +5,13 @@ import (
 )
 
 type RequestSpace struct {
-	Username   string  `json:"username"`
-	Password   string  `json:"password"`
-	Location   string  `json:"location"`
-	Substation string  `json:"substation"`
-	Price      int64 `json:"price"`
-	Capacity   int     `json:"capacity"`
-	PNGBytes   []byte  `json:"png"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Location   string `json:"location"`
+	Substation string `json:"substation"`
+	Price      int64  `json:"price"`
+	Capacity   int    `json:"capacity"`
+	PNGBytes   []byte `json:"png"`
 }
 
 type SpaceController struct {

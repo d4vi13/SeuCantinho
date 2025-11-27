@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,20 +14,20 @@ import (
 )
 
 type RequestSpace struct {
-	ID         int     `json:"Id"`
-	Location   string  `json:"location"`
-	Substation string  `json:"substation"`
-	Price      float64 `json:"price"`
-	Capacity   int     `json:"capacity"`
+	ID         int    `json:"Id"`
+	Location   string `json:"location"`
+	Substation string `json:"substation"`
+	Price      int64  `json:"price"`
+	Capacity   int    `json:"capacity"`
 }
 
 type SpaceUpdateRequest struct {
-	Username   *string  `json:"username"`
-	Password   *string  `json:"password"`
-	Location   *string  `json:"location,omitempty"`
-	Substation *string  `json:"substation,omitempty"`
-	Price      *float64 `json:"price,omitempty"`
-	Capacity   *int     `json:"capacity,omitempty"`
+	Username   *string `json:"username"`
+	Password   *string `json:"password"`
+	Location   *string `json:"location,omitempty"`
+	Substation *string `json:"substation,omitempty"`
+	Price      *int64  `json:"price,omitempty"`
+	Capacity   *int    `json:"capacity,omitempty"`
 }
 
 func CreateSpace(username string, password string) {
@@ -62,6 +63,7 @@ func CreateSpace(username string, password string) {
 		fmt.Println("Erro ao converter entrada")
 		return
 	}
+	var intPrice int64 = int64(math.Round(price * 100))
 
 	fmt.Printf("Capacidade Máxima: ")
 	input, err = reader.ReadString('\n')
@@ -82,7 +84,7 @@ func CreateSpace(username string, password string) {
 		"password":   password,
 		"location":   location,
 		"substation": substation,
-		"price":      price,
+		"price":      intPrice,
 		"capacity":   capacity,
 	}
 
@@ -133,7 +135,7 @@ func CreateSpace(username string, password string) {
 		fmt.Println("ID: ", space.ID)
 		fmt.Println("Localização: ", space.Location)
 		fmt.Println("Filial: ", space.Substation)
-		fmt.Println("Preço (R$): ", space.Price)
+		fmt.Println("Preço (R$): ", (float64(space.Price) / 100))
 		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
 		fmt.Println()
 
@@ -181,7 +183,7 @@ func UpdateSpace(username string, password string) {
 		req.Substation = &substation
 	}
 
-	fmt.Print("Novo custo: ")
+	fmt.Print("Novo Custo: ")
 	priceInput, _ := reader.ReadString('\n')
 	priceInput = strings.TrimSpace(priceInput)
 	if priceInput != "" {
@@ -190,10 +192,11 @@ func UpdateSpace(username string, password string) {
 			fmt.Println("Preço inválido")
 			return
 		}
-		req.Price = &price
+		var intPrice int64 = int64(math.Round(price * 100))
+		req.Price = &intPrice
 	}
 
-	fmt.Print("Nova capacidade: ")
+	fmt.Print("Nova Capacidade: ")
 	capInput, _ := reader.ReadString('\n')
 	capInput = strings.TrimSpace(capInput)
 	if capInput != "" {
@@ -259,7 +262,7 @@ func UpdateSpace(username string, password string) {
 		fmt.Println("ID: ", space.ID)
 		fmt.Println("Localização: ", space.Location)
 		fmt.Println("Filial: ", space.Substation)
-		fmt.Println("Preço (R$): ", space.Price)
+		fmt.Println("Preço (R$): ", (float64(space.Price) / 100))
 		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
 		fmt.Println()
 
@@ -315,7 +318,7 @@ func GetSpace() {
 		fmt.Println("ID: ", space.ID)
 		fmt.Println("Localização: ", space.Location)
 		fmt.Println("Filial: ", space.Substation)
-		fmt.Println("Preço (R$): ", space.Price)
+		fmt.Println("Preço (R$): ", (float64(space.Price) / 100))
 		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
 		fmt.Println("========================")
 		return
@@ -355,7 +358,7 @@ func GetAllSpaces() {
 			fmt.Println("ID: ", s.ID)
 			fmt.Println("Localização: ", s.Location)
 			fmt.Println("Filial: ", s.Substation)
-			fmt.Println("Preço (R$): ", s.Price)
+			fmt.Println("Preço (R$): ", (float64(s.Price) / 100))
 			fmt.Println("Capacidade (Pessoas): ", s.Capacity)
 			fmt.Println("========================")
 		}

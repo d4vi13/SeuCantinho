@@ -23,9 +23,9 @@ func (session *AdminSession) ShowOptions() {
 	fmt.Printf("5  - Deletar Espaço\n")
 	fmt.Printf("6  - Obter Usuário\n")
 	fmt.Printf("7  - Obter todos os usuários\n")
-	fmt.Printf("8  - Deletar Usuário")
+	fmt.Printf("8  - Deletar Usuário\n")
 	fmt.Printf("9  - Criar Reserva\n")
-	fmt.Printf("10  - Obter todas as reservas\n")
+	fmt.Printf("10 - Obter todas as reservas\n")
 	fmt.Printf("11 - Cancelar Reserva\n")
 }
 
