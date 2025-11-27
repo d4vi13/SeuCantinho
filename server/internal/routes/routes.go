@@ -29,6 +29,8 @@ func RegisterRoutes(mux *http.ServeMux) {
 	// // B. Reserva um espaço
 	mux.HandleFunc("POST /bookings", bookingsController.BookSpace)
 
+	 mux.HandleFunc("POST /users/{id}/bookings", bookingsController.GetUserBookings)
+
    // C. Efetua um pagamento
 	mux.HandleFunc("POST /payments/{id}", paymentsController.MakePayment)
 
