@@ -19,6 +19,7 @@ const (
   InternalError
   UserNotFound
   WrongPassword
+  Unauthorized
   Success
 )
 
@@ -35,7 +36,7 @@ func (service *BookingsService) Init() {
 
 func (service *BookingsService) BookSpace(username string, password string, spaceId int, start int64, end int64) (int, int) {
 
-  var ret int = service.usersService.AuthenticateUser(username, password)
+  ret := service.usersService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
 		log.Printf("BookingsService: User Not Found\n")
 		return -1, UserNotFound
@@ -139,7 +140,29 @@ func (service *BookingsService) IsBookingOwner(userId, bookingId int) bool {
   return true
 }
 
-func (service *BookingsService) CancelBookingById(bookingId int) int {
+func (service *BookingsService) CancelBookingById(username string, password string, bookingId int) int {
+
+  ret := service.usersService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		log.Printf("BookingsService: User Not Found\n")
+		return UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		log.Printf("BookingsService: Wrong Password\n")
+		return WrongPassword
+	}
+
+  userId := service.usersService.GetUserId(username)
+	if userId == -1 {
+		log.Printf("BookingsService: User Not Found\n")
+		return UserNotFound
+	}
+
+  if !service.usersService.UserIsAdmin(username) && !service.IsBookingOwner(userId, bookingId) {
+    return Unauthorized
+  }
+
 	err := service.bookingsRepository.Delete(bookingId)
 	if err != nil {
 		log.Printf("%+v\n", err)
