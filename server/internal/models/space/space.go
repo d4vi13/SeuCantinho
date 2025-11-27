@@ -4,7 +4,7 @@ type Space struct {
 	Id         int
 	Location   string
 	Substation string
-	Price      float64
+	Price      int64
 	Capacity   int
 	Img        []byte
 }

@@ -29,13 +29,13 @@ func (repository *UsersRepository) Insert(user *models.User) (int, error) {
 }
 
 func (repository *UsersRepository) GetUserById(id int) (*models.User, error) {
-	query := `SELECT id, username, pass_hash, is_admin FROM users WHERE id = $1`
+	query := `SELECT id, username, is_admin FROM users WHERE id = $1`
 	user := &models.User{}
 
 	// Busca no banco pelo usuário com id específico
 	row := database.QueryRow(query, id)
 
-	err := row.Scan(&user.Id, &user.Username, &user.PassHash, &user.IsAdmin)
+	err := row.Scan(&user.Id, &user.Username, &user.IsAdmin)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New("user not found")
@@ -43,6 +43,7 @@ func (repository *UsersRepository) GetUserById(id int) (*models.User, error) {
 		return nil, err
 	}
 
+	user.PassHash = "hashed_password"
 	return user, nil
 }
 
@@ -62,4 +63,35 @@ func (repository *UsersRepository) GetUserByName(username string) (*models.User,
 	}
 
 	return user, nil
+}
+
+func (repository *UsersRepository) GetAllUsers() ([]models.User, error) {
+	users := make([]models.User, 0)
+
+	// Statement para obter todos os usuários
+	query := `SELECT id, username, is_admin FROM users ORDER BY id`
+	rows, err := database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Insere os espaços em um vetor
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(&user.Id, &user.Username, &user.IsAdmin)
+		if err != nil {
+			return nil, err
+		}
+
+		user.PassHash = "hashed_password"
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Retorna o vetor
+	return users, nil
 }

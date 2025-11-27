@@ -9,7 +9,7 @@ type RequestSpace struct {
 	Password   string  `json:"password"`
 	Location   string  `json:"location"`
 	Substation string  `json:"substation"`
-	Price      float64 `json:"price"`
+	Price      int64 `json:"price"`
 	Capacity   int     `json:"capacity"`
 	PNGBytes   []byte  `json:"png"`
 }
