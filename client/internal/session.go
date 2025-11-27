@@ -24,7 +24,7 @@ func (session *AdminSession) ShowOptions() {
 	fmt.Printf("6  - Obter Usuário\n")
 	fmt.Printf("7  - Obter todos os usuários\n")
 	fmt.Printf("8  - Deletar Usuário\n")
-	fmt.Printf("9  - Criar Reserva\n")
+	fmt.Printf("9  - Fazer Reserva\n")
 	fmt.Printf("10 - Obter todas as reservas\n")
 	fmt.Printf("11 - Cancelar Reserva\n")
 }
@@ -75,6 +75,15 @@ func (session *AdminSession) Handler(opt int) int {
 	if opt == 7 {
 		GetAllUsers()
 		return 1
+	}
+
+	if opt == 8 {
+		DeleteUser(session.Data.User.Username, session.Data.User.Password)
+		return 1
+	}
+
+	if opt == 9 {
+		BookSpace(session.Data.User.Username, session.Data.User.Password)
 	}
 
 	return 0

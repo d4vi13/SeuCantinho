@@ -119,7 +119,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Usuário %s conectado\n\n", data.User.GetUsername())
+	fmt.Printf("Usuário %s conectado\n\n", data.User.Username)
 
 	var session internal.Session
 
