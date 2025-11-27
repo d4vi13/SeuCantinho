@@ -23,6 +23,7 @@ Class UsersControllers {
     + void CreateUser(req)
     + void ValidateUser(req)
     + void UserIsAdmin(req)
+    + void GetAllUsers(req)
 }
 
 Class UsersService {
@@ -31,12 +32,14 @@ Class UsersService {
     + bool AuthenticateUser(username, password)
     + bool UserIsAdmin(userId)
     + bool CreateUser(username, password, isAdmin)
+    + User[] GetAllUsers()
 }
 
 Class UsersRepository {
     + int, error Insert(user)
     + User GetUserById(userId)
     + User GetUserByName(username)
+    + User[] GetAllUsers()
 }
 
 Class SpaceRepository {
