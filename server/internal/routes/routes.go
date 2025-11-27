@@ -28,7 +28,7 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	mux.HandleFunc("POST /bookings", bookingsController.BookSpace)
 
-	mux.HandleFunc("POST /users/{id}/bookings", bookingsController.GetUserBookings)
+	mux.HandleFunc("GET /users/{id}/bookings", bookingsController.GetUserBookings)
 
 	mux.HandleFunc("POST /payments/{id}", paymentsController.MakePayment)
 
