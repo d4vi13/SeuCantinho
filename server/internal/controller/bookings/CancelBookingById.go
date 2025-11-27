@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
-	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
 func (controller *BookingsController) CancelBookingById(w http.ResponseWriter, r *http.Request) {
@@ -27,45 +26,29 @@ func (controller *BookingsController) CancelBookingById(w http.ResponseWriter, r
   }
 	defer r.Body.Close()
 
-  ret := controller.usersService.AuthenticateUser(req.Username, req.Password)
-  switch ret {
-  case users.UserNotFound:
-    w.WriteHeader(http.StatusNotFound)
-    json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
-    fmt.Printf("INFO: User %s not found\n", req.Username)
-    return
-  case users.WrongPassword:
-    w.WriteHeader(http.StatusUnauthorized)
-    json.NewEncoder(w).Encode(map[string]string{"erro": "wrong password"})
-    fmt.Printf("INFO: Wrong Password for user %s given\n", req.Username)
-    return
-  }
-
-  fmt.Printf("INFO: User %s authenticated\n", req.Username)
-
-  userId := controller.usersService.GetUserId(req.Username)
-  if userId == -1 {
-    w.WriteHeader(http.StatusNotFound)
-    json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
-    fmt.Printf("INFO: User %s not found\n", req.Username)
-    return
-  }
-
-  if controller.usersService.UserIsAdmin(req.Username) || controller.bookingsService.IsBookingOwner(userId, id) {
-    ret = controller.bookingsService.CancelBookingById(id)
-  } else {
-    w.WriteHeader(http.StatusUnauthorized)
-    json.NewEncoder(w).Encode(map[string]string{"error": "not owner or admin"})
-    fmt.Printf("INFO: User %s doesnt have authority to cancel Booking %d\n", req.Username, id)
-    return
-  }
-
+  ret := controller.bookingsService.CancelBookingById(req.Username, req.Password, id)
 	w.Header().Set("Content-Type", "application/json")
 	switch ret {
 	case svc.Success:
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"info": "deleted"})
 		fmt.Printf("INFO: Booking %d was canceled\n", id)
+  case svc.UserNotFound:
+    w.WriteHeader(http.StatusNotFound)
+    json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
+    fmt.Printf("INFO: User %s not found\n", req.Username)
+  case svc.WrongPassword:
+    w.WriteHeader(http.StatusUnauthorized)
+    json.NewEncoder(w).Encode(map[string]string{"erro": "wrong password"})
+    fmt.Printf("INFO: Wrong Password for user %s given\n", req.Username)
+  case svc.Unauthorized:
+    w.WriteHeader(http.StatusUnauthorized)
+    json.NewEncoder(w).Encode(map[string]string{"error": "not owner or admin"})
+    fmt.Printf("INFO: User %s doesnt have authority to cancel Booking %d\n", req.Username, id)
+  case svc.BookingNotFound:
+    w.WriteHeader(http.StatusNotFound)
+    json.NewEncoder(w).Encode(map[string]string{"error": "booking not found"})
+    fmt.Printf("INFO: Booking not found\n", req.Username, id)
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})

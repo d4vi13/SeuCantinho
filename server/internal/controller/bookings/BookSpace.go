@@ -4,9 +4,7 @@ import (
   "encoding/json"
   "fmt"
   "net/http"
-  "github.com/d4vi13/SeuCantinho/server/internal/services/users"
   "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
-  "github.com/d4vi13/SeuCantinho/server/internal/services/payments"
 )
 
 func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.Request) {
@@ -19,71 +17,43 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
   }
 
   w.Header().Set("Content-Type", "application/json")
-  
-  ret := controller.usersService.AuthenticateUser(req.Username, req.Password)
+  bookingId, ret := controller.bookingsService.BookSpace(req.Username, req.Password, req.SpaceId, req.Start, req.End)
   switch ret {
-  case users.UserNotFound:
+  case bookings.Success:
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(map[string]int{"id": bookingId})
+    fmt.Printf("INFO: Booking %d created succesfuly\n", bookingId)
+  case bookings.BookingConflict:
+    w.WriteHeader(http.StatusConflict)
+    json.NewEncoder(w).Encode(map[string]string{"error": "booking conflict"})
+    fmt.Printf("INFO: Booking Conflitc\n")
+  case bookings.InternalError:
+    w.WriteHeader(http.StatusInternalServerError)
+    json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
+    fmt.Printf("ERROR: Internal Server Error\n")
+  case bookings.BadBooking:
+    w.WriteHeader(http.StatusBadRequest)
+    json.NewEncoder(w).Encode(map[string]string{"error": "invalid booking attempted"})
+    fmt.Printf("ERROR: Invalid Booking Attempted\n")
+  case bookings.UserNotFound:
     w.WriteHeader(http.StatusNotFound)
     json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
     fmt.Printf("INFO: User %s not found\n", req.Username)
-    return
-  case users.WrongPassword:
+  case bookings.SpaceNotFound:
+    w.WriteHeader(http.StatusNotFound)
+    json.NewEncoder(w).Encode(map[string]string{"erro": "space not found"})
+    fmt.Printf("INFO: Space %d not found\n", req.SpaceId)
+  case bookings.PaymentCreationFailed:
+    w.WriteHeader(http.StatusNotFound)
+    json.NewEncoder(w).Encode(map[string]string{"erro": "payment creation failed"})
+    fmt.Printf("INFO: Payment creation failed \n", req.Username)
+  case bookings.WrongPassword:
     w.WriteHeader(http.StatusUnauthorized)
     json.NewEncoder(w).Encode(map[string]string{"erro": "wrong password"})
     fmt.Printf("INFO: Wrong Password for user %s given\n", req.Username)
-    return
-  }
-
-  fmt.Printf("INFO: User %s authenticated\n", req.Username)
-
-  userId := controller.usersService.GetUserId(req.Username)
-  if userId == -1 {
-    w.WriteHeader(http.StatusNotFound)
-    json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
-    fmt.Printf("INFO: User %s not found\n", req.Username)
-    return
-  }
-
-  // TODO check if space id is valid
-
-  // if succeds returns the id of the booking created
-  var bookingId int
-  bookingId, ret = controller.bookingsService.BookSpace(userId, req.SpaceId, req.Start, req.End)
-
-  fmt.Printf("INFO: Booking %d created \n", bookingId)
-
-  if ret == bookings.Success {
-    var paymentId int
-    var value int64
-    value, _ = controller.spaceService.ComputeBookingPrice(req.SpaceId, req.End - req.Start)
-    fmt.Printf("INFO: Booking Value %f\n", value)
-    paymentId, ret = controller.paymentsService.CreatePayment(bookingId, value)
-    switch ret {
-    case payments.Success:
-      w.WriteHeader(http.StatusCreated)
-      json.NewEncoder(w).Encode(map[string]int{"id": paymentId})
-      fmt.Printf("INFO: Booking %d created succesfuly\n", bookingId)
-    default:
-      controller.bookingsService.CancelBookingById(bookingId)
-      w.WriteHeader(http.StatusInternalServerError)
-      json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
-      fmt.Printf("ERROR: Unknown Status\n")
-    }
-  } else {
-    fmt.Printf("INFO: other if\n")
-    switch ret {
-    case bookings.BookingConflict:
-      w.WriteHeader(http.StatusConflict)
-      json.NewEncoder(w).Encode(map[string]string{"error": "booking conflict"})
-      fmt.Printf("INFO: Booking Conflitc\n")
-    case bookings.InternalError:
-      w.WriteHeader(http.StatusInternalServerError)
-      json.NewEncoder(w).Encode(map[string]string{"error": "internal server error"})
-      fmt.Printf("ERROR: Internal Server Error\n")
-    case bookings.BadBooking:
-      w.WriteHeader(http.StatusBadRequest)
-      json.NewEncoder(w).Encode(map[string]string{"error": "invalid booking attempted"})
-      fmt.Printf("ERROR: Invalid Booking Attempted\n")
-    }
+  default:
+    w.WriteHeader(http.StatusInternalServerError)
+    json.NewEncoder(w).Encode(map[string]string{"error": "unknown status"})
+    fmt.Printf("ERROR: Unknown Status\n")
   }
 }

@@ -2,6 +2,9 @@ package bookings
 
 import (
 	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/payments"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/space"
 	"github.com/d4vi13/SeuCantinho/server/internal/repository/bookings"
 	"log"
 )
@@ -11,19 +14,51 @@ const (
   BookingConflict
   BookingNotFound
   BadBooking
+  SpaceNotFound
+  PaymentCreationFailed
   InternalError
+  UserNotFound
+  WrongPassword
+  Unauthorized
   Success
 )
 
 type BookingsService struct {
 	bookingsRepository bookings.BookingsRepository
+	paymentsService payments.PaymentsService
+	spaceService space.SpaceService
+	usersService users.UsersService
 }
 
 func (service *BookingsService) Init() {
 	service.bookingsRepository.Init()
 }
 
-func (service *BookingsService) BookSpace(userId int, spaceId int, start int64, end int64) (int, int) {
+func (service *BookingsService) BookSpace(username string, password string, spaceId int, start int64, end int64) (int, int) {
+
+  ret := service.usersService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		log.Printf("BookingsService: User Not Found\n")
+		return -1, UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		log.Printf("BookingsService: Wrong Password\n")
+		return -1, WrongPassword
+	}
+
+  userId := service.usersService.GetUserId(username)
+	if userId == -1 {
+		log.Printf("BookingsService: User Not Found\n")
+		return -1, UserNotFound
+	}
+
+  var value int64
+  value, ret = service.spaceService.ComputeBookingPrice(spaceId, end - start)
+  if ret == space.SpaceNotFound {
+		log.Printf("BookingsService: Space Not Found\n")
+		return -1, SpaceNotFound
+	}
 
   booking := &models.Booking{
     UserId: userId,
@@ -54,6 +89,12 @@ func (service *BookingsService) BookSpace(userId int, spaceId int, start int64, 
     log.Println("ERROR: Failed to insert new booking")
 		return -1, InternalError 
 	}
+
+  _, ret = service.paymentsService.CreatePayment(id, value)
+  if ret != payments.Success {
+	  service.bookingsRepository.Delete(id)
+    return -1, PaymentCreationFailed 
+  }
 
 	return id, Success
 }
@@ -99,7 +140,29 @@ func (service *BookingsService) IsBookingOwner(userId, bookingId int) bool {
   return true
 }
 
-func (service *BookingsService) CancelBookingById(bookingId int) int {
+func (service *BookingsService) CancelBookingById(username string, password string, bookingId int) int {
+
+  ret := service.usersService.AuthenticateUser(username, password)
+	if ret == users.UserNotFound {
+		log.Printf("BookingsService: User Not Found\n")
+		return UserNotFound
+	}
+
+	if ret == users.WrongPassword {
+		log.Printf("BookingsService: Wrong Password\n")
+		return WrongPassword
+	}
+
+  userId := service.usersService.GetUserId(username)
+	if userId == -1 {
+		log.Printf("BookingsService: User Not Found\n")
+		return UserNotFound
+	}
+
+  if !service.usersService.UserIsAdmin(username) && !service.IsBookingOwner(userId, bookingId) {
+    return Unauthorized
+  }
+
 	err := service.bookingsRepository.Delete(bookingId)
 	if err != nil {
 		log.Printf("%+v\n", err)
