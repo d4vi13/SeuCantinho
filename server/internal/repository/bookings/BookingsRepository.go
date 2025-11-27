@@ -13,22 +13,22 @@ type BookingsRepository struct{}
 func (repository *BookingsRepository) Init() {}
 
 func (repository *BookingsRepository) CheckBookingConflicts(booking *models.Booking) (bool, error) {
-  var exists int
+	var exists int
 	query := `SELECT 1 FROM bookings WHERE spaceId = $1 AND bookingStart < $3 AND bookingEnd > $2 LIMIT 1;`
 
-  err := database.QueryRow(query,booking.SpaceId, booking.Start, booking.End).Scan(&exists)
-  if err != nil {
-    if err == sql.ErrNoRows {
-      // no conflict
-      return false, nil
-    }
+	err := database.QueryRow(query, booking.SpaceId, booking.Start, booking.End).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// no conflict
+			return false, nil
+		}
 
-    //internal error
-    return true, errors.New("internal db error")
-  }
+		//internal error
+		return true, errors.New("internal db error")
+	}
 
-  // conflict
-  return true, nil 
+	// conflict
+	return true, nil
 }
 
 func (repository *BookingsRepository) Insert(booking *models.Booking) (int, error) {
@@ -110,7 +110,7 @@ func (repository *BookingsRepository) Delete(id int) error {
 }
 func (repository *BookingsRepository) GetUserBookings(userId int) ([]models.Booking, error) {
 	bookings := make([]models.Booking, 0)
-  query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings WHERE userId = $1 ORDER BY id;`
+	query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings WHERE userId = $1 ORDER BY id;`
 	rows, err := database.Query(query, userId)
 	if err != nil {
 		return nil, err
@@ -133,5 +133,3 @@ func (repository *BookingsRepository) GetUserBookings(userId int) ([]models.Book
 
 	return bookings, nil
 }
-
-

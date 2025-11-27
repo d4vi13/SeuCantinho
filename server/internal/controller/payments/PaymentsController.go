@@ -5,7 +5,7 @@ import (
 )
 
 type PaymentRequest struct {
-  Value    int64   `json:space`
+	Value int64 `json:"space"`
 }
 
 type PaymentsController struct {
