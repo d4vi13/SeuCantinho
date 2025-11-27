@@ -316,6 +316,8 @@ func GetSpace() {
 		if err := json.NewDecoder(resp.Body).Decode(&space); err != nil {
 			panic(err)
 		}
+
+		fmt.Println()
 		fmt.Println("========================")
 		fmt.Println("ID: ", space.ID)
 		fmt.Println("Localização: ", space.Location)
@@ -323,6 +325,8 @@ func GetSpace() {
 		fmt.Println("Preço (R$): ", (float64(space.Price) / 100))
 		fmt.Println("Capacidade (Pessoas): ", space.Capacity)
 		fmt.Println("========================")
+		fmt.Println()
+
 		return
 	}
 
@@ -373,7 +377,7 @@ func GetAllSpaces() {
 func DeleteSpace(username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Deleção de Espaço de Espaço")
+	fmt.Println("Deleção de Espaço")
 	fmt.Printf("ID do Espaço: ")
 	input, err := reader.ReadString('\n')
 	if err != nil && err != io.EOF {
