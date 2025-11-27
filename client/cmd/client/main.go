@@ -18,6 +18,7 @@ func main() {
 	fmt.Printf("==== Cliente Seu Cantinho ===\n")
 	reader := bufio.NewReader(os.Stdin)
 
+	fmt.Printf("0- Sair\n")
 	fmt.Printf("1- Login\n")
 	fmt.Printf("2- Criar Usuário\n")
 	fmt.Printf("Selecione uma opção: ")
@@ -34,6 +35,8 @@ func main() {
 
 	num, _ := strconv.Atoi(trimmedInput)
 	switch num {
+	case 0:
+		return
 	case 1:
 		fmt.Printf("Usuário: ")
 		username, err := reader.ReadString('\n')
