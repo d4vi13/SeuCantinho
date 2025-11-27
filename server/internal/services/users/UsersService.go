@@ -38,6 +38,18 @@ func (service *UsersService) GetUserId(username string) int {
 	return user.Id
 }
 
+func (service *UsersService) GetUserById(userId int) (*models.User, int) {
+	// Obtém o usuário atravês do Id
+
+	users, err := service.usersRepository.GetUserById(userId)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, UserNotFound
+	}
+
+	return users, UserFound
+}
+
 func (service *UsersService) AuthenticateUser(username string, password string) int {
 
 	user, err := service.usersRepository.GetUserByName(username)
