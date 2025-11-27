@@ -71,3 +71,43 @@ func GetUser() {
 
 	fmt.Println("Erro desconhecido")
 }
+
+func GetAllUsers() {
+	var users []RequestUser
+
+	// Faz a requisição ao backend
+	resp, err := http.Get("http://server:8080/users")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("Não existe nenhum usuário\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+			panic(err)
+		}
+
+		for _, user := range users {
+			fmt.Println("========================")
+			fmt.Println("ID: ", user.ID)
+			fmt.Println("Username: ", user.Username)
+			fmt.Println("PassHash: ", user.PassHash)
+			fmt.Println("Is Admin?: ", user.IsAdmin)
+			fmt.Println("========================")
+		}
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
