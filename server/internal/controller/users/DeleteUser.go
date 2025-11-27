@@ -46,11 +46,11 @@ func (controller *UsersController) DeleteUser(w http.ResponseWriter, r *http.Req
 		json.NewEncoder(w).Encode(map[string]string{"error": "wrong password"})
 		fmt.Printf("ERROR: The password for User %s is incorrect.\n", userReq.Username)
 	case svc.InvalidAdmin:
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]string{"error": "user is not an admin"})
 		fmt.Printf("ERROR: User %s is not an admin\n", userReq.Username)
 	case svc.InvalidDelete:
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusLocked)
 		json.NewEncoder(w).Encode(map[string]string{"error": "this user is an admin"})
 		fmt.Printf("ERROR: User %d is an admin.\n", id)
 	case svc.InternalError:
