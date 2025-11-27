@@ -48,8 +48,6 @@ func RegisterRoutes(mux *http.ServeMux) {
 
 	mux.HandleFunc("DELETE /space/{id}", spaceController.DeleteSpace)
 
-	mux.HandleFunc("GET /payments/{id}", paymentsController.GetPaymentById)
-
 	mux.HandleFunc("POST /users", usersController.CreateUser)
 
 	mux.HandleFunc("POST /login", usersController.UserLogin)

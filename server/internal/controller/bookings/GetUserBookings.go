@@ -36,7 +36,7 @@ func (controller *BookingsController) GetUserBookings(w http.ResponseWriter, r *
   case svc.UserNotFound:
     w.WriteHeader(http.StatusNotFound)
     json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
-    fmt.Printf("INFO: User %s not found\n", req.Username)
+    fmt.Printf("INFO: User %d not found\n", id)
   case svc.WrongPassword:
     w.WriteHeader(http.StatusUnauthorized)
     json.NewEncoder(w).Encode(map[string]string{"erro": "wrong password"})
