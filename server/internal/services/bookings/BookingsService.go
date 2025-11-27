@@ -1,33 +1,34 @@
 package bookings
 
 import (
+	"log"
+
 	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
-	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
+	"github.com/d4vi13/SeuCantinho/server/internal/repository/bookings"
 	"github.com/d4vi13/SeuCantinho/server/internal/services/payments"
 	"github.com/d4vi13/SeuCantinho/server/internal/services/space"
-	"github.com/d4vi13/SeuCantinho/server/internal/repository/bookings"
-	"log"
+	"github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
 const (
-  BookingCreated = iota
-  BookingConflict
-  BookingNotFound
-  BadBooking
-  SpaceNotFound
-  PaymentCreationFailed
-  InternalError
-  UserNotFound
-  WrongPassword
-  Unauthorized
-  Success
+	BookingCreated = iota
+	BookingConflict
+	BookingNotFound
+	BadBooking
+	SpaceNotFound
+	PaymentCreationFailed
+	InternalError
+	UserNotFound
+	WrongPassword
+	Unauthorized
+	Success
 )
 
 type BookingsService struct {
 	bookingsRepository bookings.BookingsRepository
-	paymentsService payments.PaymentsService
-	spaceService space.SpaceService
-	usersService users.UsersService
+	paymentsService    payments.PaymentsService
+	spaceService       space.SpaceService
+	usersService       users.UsersService
 }
 
 func (service *BookingsService) Init() {
@@ -36,7 +37,7 @@ func (service *BookingsService) Init() {
 
 func (service *BookingsService) BookSpace(username string, password string, spaceId int, start int64, end int64) (int, int) {
 
-  ret := service.usersService.AuthenticateUser(username, password)
+	ret := service.usersService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
 		log.Printf("BookingsService: User Not Found\n")
 		return -1, UserNotFound
@@ -47,54 +48,54 @@ func (service *BookingsService) BookSpace(username string, password string, spac
 		return -1, WrongPassword
 	}
 
-  userId := service.usersService.GetUserId(username)
+	userId := service.usersService.GetUserId(username)
 	if userId == -1 {
 		log.Printf("BookingsService: User Not Found\n")
 		return -1, UserNotFound
 	}
 
-  var value int64
-  value, ret = service.spaceService.ComputeBookingPrice(spaceId, end - start)
-  if ret == space.SpaceNotFound {
+	var value int64
+	value, ret = service.spaceService.ComputeBookingPrice(spaceId, end-start)
+	if ret == space.SpaceNotFound {
 		log.Printf("BookingsService: Space Not Found\n")
 		return -1, SpaceNotFound
 	}
 
-  booking := &models.Booking{
-    UserId: userId,
+	booking := &models.Booking{
+		UserId:  userId,
 		SpaceId: spaceId,
-		Start: start,
-		End: end,
+		Start:   start,
+		End:     end,
 	}
 
-  err := booking.Validate() 
-  if err != nil {
-    log.Println(err)
-    return -1, BadBooking 
-  }
+	err := booking.Validate()
+	if err != nil {
+		log.Println(err)
+		return -1, BadBooking
+	}
 
-  conflict, err := service.bookingsRepository.CheckBookingConflicts(booking)
-  if err != nil {
-    log.Println(err)
-    return -1, InternalError 
-  }
+	conflict, err := service.bookingsRepository.CheckBookingConflicts(booking)
+	if err != nil {
+		log.Println(err)
+		return -1, InternalError
+	}
 
-  if conflict {
-    log.Println("INFO: Booking Conflict")
-    return -1, BookingConflict 
-  }
+	if conflict {
+		log.Println("INFO: Booking Conflict")
+		return -1, BookingConflict
+	}
 
 	id, err := service.bookingsRepository.Insert(booking)
 	if err != nil {
-    log.Println("ERROR: Failed to insert new booking")
-		return -1, InternalError 
+		log.Println("ERROR: Failed to insert new booking")
+		return -1, InternalError
 	}
 
-  _, ret = service.paymentsService.CreatePayment(id, value)
-  if ret != payments.Success {
-	  service.bookingsRepository.Delete(id)
-    return -1, PaymentCreationFailed 
-  }
+	_, ret = service.paymentsService.CreatePayment(id, value)
+	if ret != payments.Success {
+		service.bookingsRepository.Delete(id)
+		return -1, PaymentCreationFailed
+	}
 
 	return id, Success
 }
@@ -130,19 +131,19 @@ func (service *BookingsService) IsBookingOwner(userId, bookingId int) bool {
 	booking, err := service.bookingsRepository.GetBookingById(bookingId)
 	if err != nil {
 		log.Printf("%+v\n", err)
-		return false 
+		return false
 	}
 
-  if booking.UserId != userId {
-    return false
-  }
+	if booking.UserId != userId {
+		return false
+	}
 
-  return true
+	return true
 }
 
 func (service *BookingsService) CancelBookingById(username string, password string, bookingId int) int {
 
-  ret := service.usersService.AuthenticateUser(username, password)
+	ret := service.usersService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
 		log.Printf("BookingsService: User Not Found\n")
 		return UserNotFound
@@ -153,15 +154,15 @@ func (service *BookingsService) CancelBookingById(username string, password stri
 		return WrongPassword
 	}
 
-  userId := service.usersService.GetUserId(username)
+	userId := service.usersService.GetUserId(username)
 	if userId == -1 {
 		log.Printf("BookingsService: User Not Found\n")
 		return UserNotFound
 	}
 
-  if !service.usersService.UserIsAdmin(username) && !service.IsBookingOwner(userId, bookingId) {
-    return Unauthorized
-  }
+	if !service.usersService.UserIsAdmin(username) && !service.IsBookingOwner(userId, bookingId) {
+		return Unauthorized
+	}
 
 	err := service.bookingsRepository.Delete(bookingId)
 	if err != nil {
@@ -172,15 +173,15 @@ func (service *BookingsService) CancelBookingById(username string, password stri
 	return Success
 }
 
-func (service *BookingsService) GetUserBookings(userId int, username string, password string)  ([]models.Booking, int) {
+func (service *BookingsService) GetUserBookings(userId int, username string, password string) ([]models.Booking, int) {
 
-  _, ret := service.usersService.GetUserById(userId)
-  if ret == users.UserNotFound {
+	_, ret := service.usersService.GetUserById(userId)
+	if ret == users.UserNotFound {
 		log.Printf("BookingsService: User Not Found\n")
 		return nil, UserNotFound
 	}
 
-  ret = service.usersService.AuthenticateUser(username, password)
+	ret = service.usersService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
 		log.Printf("BookingsService: User Not Found\n")
 		return nil, UserNotFound
@@ -191,17 +192,17 @@ func (service *BookingsService) GetUserBookings(userId int, username string, pas
 		return nil, WrongPassword
 	}
 
-  requesterId := service.usersService.GetUserId(username)
+	requesterId := service.usersService.GetUserId(username)
 	if userId == -1 {
 		log.Printf("BookingsService: User Not Found\n")
 		return nil, UserNotFound
 	}
 
-  if !service.usersService.UserIsAdmin(username) && !(userId != requesterId) {
-    return nil, Unauthorized
-  }
+	if !service.usersService.UserIsAdmin(username) && !(userId != requesterId) {
+		return nil, Unauthorized
+	}
 
-  bookings, err := service.bookingsRepository.GetUserBookings(userId)
+	bookings, err := service.bookingsRepository.GetUserBookings(userId)
 	if err != nil {
 		log.Printf("%+v\n", err)
 		return nil, BookingNotFound
@@ -209,4 +210,3 @@ func (service *BookingsService) GetUserBookings(userId int, username string, pas
 
 	return bookings, Success
 }
-

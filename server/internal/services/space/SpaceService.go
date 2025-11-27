@@ -49,8 +49,8 @@ func (service *SpaceService) ComputeBookingPrice(spaceId int, Duration int64) (i
 		fmt.Printf("%+v\n", err)
 		return 0, SpaceNotFound
 	}
-  
-  value := space.Price * int64(Duration / (60 * 60 * 24))
+
+	value := space.Price * int64(Duration/(60*60*24))
 
 	return value, SpaceFound
 }
