@@ -24,6 +24,7 @@ Class UsersControllers {
     + void ValidateUser(req)
     + void UserIsAdmin(req)
     + void GetUserById(req)
+    + void GetAllUsers(req)
 }
 
 Class UsersService {
@@ -33,12 +34,14 @@ Class UsersService {
     + bool UserIsAdmin(userId)
     + bool CreateUser(username, password, isAdmin)
     + User GetUserById(userId)
+    + User[] GetAllUsers()
 }
 
 Class UsersRepository {
     + int, error Insert(user)
     + User GetUserById(userId)
     + User GetUserByName(username)
+    + User[] GetAllUsers()
 }
 
 Class SpaceRepository {

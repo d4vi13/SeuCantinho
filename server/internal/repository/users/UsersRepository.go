@@ -64,3 +64,34 @@ func (repository *UsersRepository) GetUserByName(username string) (*models.User,
 
 	return user, nil
 }
+
+func (repository *UsersRepository) GetAllUsers() ([]models.User, error) {
+	users := make([]models.User, 0)
+
+	// Statement para obter todos os usuários
+	query := `SELECT id, username, is_admin FROM users ORDER BY id`
+	rows, err := database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Insere os espaços em um vetor
+	for rows.Next() {
+		var user models.User
+		err := rows.Scan(&user.Id, &user.Username, &user.IsAdmin)
+		if err != nil {
+			return nil, err
+		}
+
+		user.PassHash = "hashed_password"
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Retorna o vetor
+	return users, nil
+}

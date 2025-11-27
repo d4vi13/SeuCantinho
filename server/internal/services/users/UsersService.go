@@ -11,7 +11,9 @@ import (
 const (
 	UserCreated = iota
 	UserFound
+	UsersFound
 	UserNotFound
+	UsersNotFound
 	UserAuthenticated
 	WrongPassword
 	InternalError
@@ -129,4 +131,19 @@ func (service *UsersService) CreateUser(username string, password string) (*mode
 
 	fmt.Printf("UserService: User created\n")
 	return user, UserCreated
+}
+
+func (service *UsersService) GetAllUsers() ([]models.User, int) {
+	users, err := service.usersRepository.GetAllUsers()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	if len(users) == 0 {
+		fmt.Printf("UsersService: Spaces not found\n")
+		return nil, UsersNotFound
+	}
+
+	return users, UsersFound
 }
