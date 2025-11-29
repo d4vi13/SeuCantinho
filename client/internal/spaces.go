@@ -99,20 +99,7 @@ func CreateSpace(username string, password string) {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusBadRequest {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		var data map[string]string
-		if err := json.Unmarshal(body, &data); err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		fmt.Println("Erro:", data["error"])
-
+		fmt.Println("O usuário não é um admin")
 		return
 	}
 

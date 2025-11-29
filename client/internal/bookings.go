@@ -119,20 +119,7 @@ func BookSpace(username string, password string) {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		var data map[string]string
-		if err := json.Unmarshal(body, &data); err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		fmt.Println("Erro:", data["error"])
-
+		fmt.Printf("Espaço não encontrado\n")
 		return
 	}
 
@@ -481,38 +468,12 @@ func CancelBooking(username string, password string) {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		var data map[string]string
-		if err := json.Unmarshal(body, &data); err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		fmt.Println("Erro:", data["error"])
-
+		fmt.Println("Essa reserva não existe")
 		return
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		var data map[string]string
-		if err := json.Unmarshal(body, &data); err != nil {
-			fmt.Printf("Não foi possível obter a resposta")
-			return
-		}
-
-		fmt.Println("Erro:", data["error"])
-
+		fmt.Println("O usuário não tem autorização para cancelar essa reserva")
 		return
 	}
 
