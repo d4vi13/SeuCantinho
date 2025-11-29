@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -41,7 +42,7 @@ func getPayment(id int) (float64, float64) {
 
 	// Trata valores de retorno
 	if resp.StatusCode == http.StatusNotFound {
-		fmt.Printf("Esse pagamento não existe\n")
+		fmt.Printf("Inexistente\n")
 		return -1, -1
 	}
 
@@ -231,7 +232,7 @@ func GetBooking() {
 			panic(err)
 		}
 
-		total, payed := getPayment(booking.Id)
+		total, paid := getPayment(booking.Id)
 
 		if total == -1 {
 			return
@@ -245,7 +246,7 @@ func GetBooking() {
 		fmt.Println("Data de Início: ", booking.StartDate)
 		fmt.Println("Data de Fim: ", booking.EndDate)
 		fmt.Println("Dias Reservados: ", booking.Days)
-		fmt.Println("Valor Pago (R$): ", payed)
+		fmt.Println("Valor Pago (R$): ", paid)
 		fmt.Println("Custo Total (R$): ", total)
 		fmt.Println("========================")
 		fmt.Println()
@@ -286,7 +287,7 @@ func GetMyBookings(id int) {
 
 		for _, b := range bookings {
 
-			total, payed := getPayment(b.Id)
+			total, paid := getPayment(b.Id)
 			if total == -1 {
 				return
 			}
@@ -297,7 +298,7 @@ func GetMyBookings(id int) {
 			fmt.Println("Data de Início: ", b.StartDate)
 			fmt.Println("Data de Fim: ", b.EndDate)
 			fmt.Println("Dias Reservados: ", b.Days)
-			fmt.Println("Valor Pago (R$): ", payed)
+			fmt.Println("Valor Pago (R$): ", paid)
 			fmt.Println("Custo Total (R$): ", total)
 			fmt.Println("========================")
 		}
@@ -335,7 +336,7 @@ func GetAllBookings() {
 
 		for _, b := range bookings {
 
-			total, payed := getPayment(b.Id)
+			total, paid := getPayment(b.Id)
 			if total == -1 {
 				return
 			}
@@ -347,10 +348,92 @@ func GetAllBookings() {
 			fmt.Println("Data de Início: ", b.StartDate)
 			fmt.Println("Data de Fim: ", b.EndDate)
 			fmt.Println("Dias Reservados: ", b.Days)
-			fmt.Println("Valor Pago (R$): ", payed)
+			fmt.Println("Valor Pago (R$): ", paid)
 			fmt.Println("Custo Total (R$): ", total)
 			fmt.Println("========================")
 		}
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
+func PayBooking() {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Pagamento de Reserva")
+	fmt.Printf("ID da Reserva: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	total, paid := getPayment(id)
+
+	if total == -1 {
+		return
+	}
+
+	fmt.Println("Valor Pago (R$): ", paid)
+	fmt.Println("Valor Total (R$): ", total)
+
+	fmt.Printf("Insira o valor que deseja pagar: ")
+	input, err = reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	value, err := strconv.ParseFloat(input, 64)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	var intValue int64 = int64(math.Round(value * 100))
+
+	payload := map[string]interface{}{
+		"value": intValue,
+	}
+
+	url := fmt.Sprintf("http://server:8080/payments/%d", id)
+
+	// Faz a requisição para o backend
+	jsonData, _ := json.Marshal(payload)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusBadRequest {
+		fmt.Printf("Pagamento inválido\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusCreated {
+
+		fmt.Println("Pagamento realizado com sucesso!")
+
+		total, paid = getPayment(id)
+
+		fmt.Println("Valor Pago (R$): ", paid)
+		fmt.Println("Valor Total (R$): ", total)
+
 		return
 	}
 

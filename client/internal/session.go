@@ -99,6 +99,11 @@ func (session *AdminSession) Handler(opt int) int {
 		return 1
 	}
 
+	if opt == 12 {
+		PayBooking()
+		return 1
+	}
+
 	return 0
 }
 
