@@ -18,7 +18,7 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	bookingId, ret := controller.bookingsService.BookSpace(req.Username, req.Password, req.SpaceId, req.Start, req.End)
+	bookingId, ret := controller.bookingsService.BookSpace(req.Username, req.Password, req.SpaceId, req.StartDate, req.Days)
 	switch ret {
 	case bookings.Success:
 		w.WriteHeader(http.StatusCreated)
