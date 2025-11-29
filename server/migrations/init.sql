@@ -32,14 +32,3 @@ INSERT INTO users (username, pass_hash, is_admin)
 VALUES ('DonaMaria', '$2a$10$Kpbi/0XjbrAcD0C5bxcM.OO4hISNQWqAHA3pYSD10ypvJhKyEYzYW', TRUE)
 ON CONFLICT (username) DO NOTHING;
 
-
-INSERT INTO spaces (id, location, substation, price, capacity, image)
-VALUES (
-    0,
-    'Teste',
-    'Substation A',
-    9999,
-    5,
-    NULL
-);
-

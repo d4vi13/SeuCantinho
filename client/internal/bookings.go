@@ -402,6 +402,8 @@ func PayBooking() {
 	}
 	defer resp.Body.Close()
 
+	fmt.Println()
+
 	if resp.StatusCode == http.StatusBadRequest {
 		fmt.Printf("Pagamento inválido\n")
 		return
