@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type RequestBookings struct {
+type RequestBooking struct {
 	Id        int    `json:"id"`
 	UserId    int    `json:"UserId"`
 	SpaceId   int    `json:"SpaceId"`
@@ -65,7 +65,7 @@ func getPayment(id int) (float64, float64) {
 
 func BookSpace(username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
-	var req RequestBookings
+	var req RequestBooking
 
 	fmt.Println("Reserva de Espaço")
 	fmt.Printf("ID do Espaço: ")
@@ -188,8 +188,76 @@ func BookSpace(username string, password string) {
 	fmt.Println("Erro desconhecido")
 }
 
+func GetBooking() {
+	var booking RequestBooking
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Printf("ID da Reserva: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	url := fmt.Sprintf("http://server:8080/bookings/%d", id)
+
+	// Faz a requisição ao backend
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("Essa reserva não existe\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&booking); err != nil {
+			panic(err)
+		}
+
+		total, payed := getPayment(booking.Id)
+
+		if total == -1 {
+			return
+		}
+
+		fmt.Println()
+		fmt.Println("========================")
+		fmt.Println("ID:", booking.Id)
+		fmt.Println("ID do Usuário: ", booking.UserId)
+		fmt.Println("ID do Espaço: ", booking.SpaceId)
+		fmt.Println("Data de Início: ", booking.StartDate)
+		fmt.Println("Data de Fim: ", booking.EndDate)
+		fmt.Println("Dias Reservados: ", booking.Days)
+		fmt.Println("Valor Pago (R$): ", payed)
+		fmt.Println("Custo Total (R$): ", total)
+		fmt.Println("========================")
+		fmt.Println()
+
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
 func GetAllBookings() {
-	var bookings []RequestBookings
+	var bookings []RequestBooking
 
 	// Faz a requisição ao backend
 	resp, err := http.Get("http://server:8080/bookings")
@@ -228,8 +296,8 @@ func GetAllBookings() {
 			fmt.Println("Data de Início: ", b.StartDate)
 			fmt.Println("Data de Fim: ", b.EndDate)
 			fmt.Println("Dias Reservados: ", b.Days)
-			fmt.Println("Custo Total (R$): ", total)
 			fmt.Println("Valor Pago (R$): ", payed)
+			fmt.Println("Custo Total (R$): ", total)
 			fmt.Println("========================")
 		}
 		return

@@ -24,8 +24,10 @@ func (session *AdminSession) ShowOptions() {
 	fmt.Printf("6  - Obter Usuário\n")
 	fmt.Printf("7  - Obter todos os usuários\n")
 	fmt.Printf("8  - Fazer Reserva\n")
-	fmt.Printf("9  - Obter todas as reservas\n")
-	fmt.Printf("10 - Cancelar Reserva\n")
+	fmt.Printf("9  - Obter Reserva\n")
+	fmt.Printf("10 - Obter todas as reservas\n")
+	fmt.Printf("11 - Pagar Reserva\n")
+	fmt.Printf("12 - Cancelar Reserva\n")
 }
 
 func (session *ClientSession) ShowOptions() {
@@ -82,6 +84,11 @@ func (session *AdminSession) Handler(opt int) int {
 	}
 
 	if opt == 9 {
+		GetBooking()
+		return 1
+	}
+
+	if opt == 10 {
 		GetAllBookings()
 		return 1
 	}
