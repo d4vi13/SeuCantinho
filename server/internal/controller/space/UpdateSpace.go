@@ -9,6 +9,18 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
+// UpdateSpace godoc
+// @Summary Atualiza um espaço existente
+// @Description Atualiza os dados de um espaço existente com base no ID informado. Apenas administradores podem atualizar espaços.
+// @Tags Spaces
+// @Accept json
+// @Produce json
+// @Param id path int true "ID do espaço"
+// @Param space body RequestSpace true "Dados atualizados do espaço"
+// @Success 201 {object} models.Space "Espaço atualizado com sucesso"
+// @Failure 400 {object} map[string]string "Usuário não encontrado, não é admin, senha incorreta ou espaço não existe"
+// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Router /space/{id} [put]
 func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace
 

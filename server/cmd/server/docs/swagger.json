@@ -1,0 +1,10 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API que gerencia os usuários, as reservas, os espaços e os pagamentos",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "paths": {}
+}

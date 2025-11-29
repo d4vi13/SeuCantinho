@@ -8,6 +8,18 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
+// UserLogin godoc
+// @Summary Realiza login do usuário
+// @Description Valida username e password e retorna os dados do usuário em caso de sucesso
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body RequestUser true "Credenciais do usuário"
+// @Success 200 {object} models.User "Login bem-sucedido"
+// @Failure 400 {object} map[string]string "Senha incorreta"
+// @Failure 404 {object} map[string]string "Usuário não encontrado"
+// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Router /login [post]
 func (controller *UsersController) UserLogin(w http.ResponseWriter, r *http.Request) {
 	var userReq RequestUser
 

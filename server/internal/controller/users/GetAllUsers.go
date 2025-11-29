@@ -8,6 +8,15 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
+// GetAllUsers godoc
+// @Summary Lista todos os usuários
+// @Description Retorna um array com todos os usuários cadastrados
+// @Tags Users
+// @Produce json
+// @Success 200 {array} models.User "Lista de usuários cadastrados"
+// @Failure 404 {object} map[string]string "Nenhum usuário encontrado"
+// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Router /users [get]
 func (controller *UsersController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, ret := controller.usersService.GetAllUsers()
 

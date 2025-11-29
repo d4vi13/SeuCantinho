@@ -9,6 +9,16 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
+// GetUserById godoc
+// @Summary Retorna um usuário pelo ID
+// @Description Retorna os dados do usuário correspondente ao ID informado
+// @Tags Users
+// @Produce json
+// @Param id path int true "ID do usuário"
+// @Success 200 {object} models.User "Usuário encontrado"
+// @Failure 404 {object} map[string]string "Usuário não encontrado"
+// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Router /users/{id} [get]
 func (controller *UsersController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if (err != nil) || (id < 1) {
