@@ -19,7 +19,7 @@ Class SpaceService {
     + Space UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
 }
 
-Class UsersControllers {
+Class UsersController {
     - UsersService usersService
     + void CreateUser(req)
     + void UserLogin(req)
@@ -167,15 +167,15 @@ BookingController --> BookingService : "Chama métodos"
 BookingService --> BookingRepository : "Chama métodos"
 BookingService -l-> SpaceService : "Chama métodos"
 BookingService -d-> UsersService : "Chama métodos"
+BookingService -r-> PaymentsService : "Chama métodos"
 BookingService --> Booking : "Cria / usa"
-BookingService --> BookingParsed : "Cria / usa"
+BookingService --> BookingParsed : "Cria / retorna"
 BookingRepository --> Booking : "Retorna"
 
 SpaceController -r[hidden]-> BookingController
 BookingController -l[hidden]-> SpaceController
 BookingController -r[hidden]-> PaymentsController
 PaymentsController -l[hidden]-> BookingController
-
-UsersControllers --> UsersService : "Chama Métodos"
+UsersController --> UsersService : "Chama Métodos"
 
 @enduml
