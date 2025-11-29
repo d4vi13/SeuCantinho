@@ -10,11 +10,11 @@ type AuthRequest struct {
 }
 
 type BookSpaceRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	SpaceId  int    `json:"space"`
-	Start    int64  `json:"start"`
-	End      int64  `json:"end"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	SpaceId   int    `json:"space"`
+	StartDate string `json:"startDate"`
+	Days      int    `json:"bookingTime"`
 }
 
 type BookingsController struct {

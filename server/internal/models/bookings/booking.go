@@ -9,9 +9,17 @@ type Booking struct {
 	Id      int
 	UserId  int
 	SpaceId int
-	//PixId   int
-	Start int64 //Unix Time
-	End   int64 // Unix Time
+	Start   int64 // Unix Time
+	End     int64 // Unix Time
+}
+
+type BookingParsed struct {
+	Id        int
+	UserId    int
+	SpaceId   int
+	StartDate string
+	EndDate   string
+	Days      int
 }
 
 func (b *Booking) Validate() error {

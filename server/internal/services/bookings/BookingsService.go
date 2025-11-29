@@ -2,6 +2,7 @@ package bookings
 
 import (
 	"log"
+	"time"
 
 	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
 	"github.com/d4vi13/SeuCantinho/server/internal/repository/bookings"
@@ -35,7 +36,7 @@ func (service *BookingsService) Init() {
 	service.bookingsRepository.Init()
 }
 
-func (service *BookingsService) BookSpace(username string, password string, spaceId int, start int64, end int64) (int, int) {
+func (service *BookingsService) BookSpace(username string, password string, spaceId int, startDate string, days int) (int, int) {
 
 	ret := service.usersService.AuthenticateUser(username, password)
 	if ret == users.UserNotFound {
@@ -54,6 +55,16 @@ func (service *BookingsService) BookSpace(username string, password string, spac
 		return -1, UserNotFound
 	}
 
+	startParse, err := time.Parse("2006-01-02", startDate)
+	if err != nil {
+		log.Printf("BookingsService: Error in date parsing\n")
+		return -1, InternalError
+	}
+	endParse := startParse.AddDate(0, 0, days)
+
+	start := startParse.Unix()
+	end := endParse.Unix()
+
 	var value int64
 	value, ret = service.spaceService.ComputeBookingPrice(spaceId, end-start)
 	if ret == space.SpaceNotFound {
@@ -68,7 +79,7 @@ func (service *BookingsService) BookSpace(username string, password string, spac
 		End:     end,
 	}
 
-	err := booking.Validate()
+	err = booking.Validate()
 	if err != nil {
 		log.Println(err)
 		return -1, BadBooking
@@ -100,28 +111,64 @@ func (service *BookingsService) BookSpace(username string, password string, spac
 	return id, Success
 }
 
-func (service *BookingsService) GetAllBookings() ([]models.Booking, int) {
-	bookings, err := service.bookingsRepository.GetAllBookings()
+func (service *BookingsService) GetAllBookings() ([]models.BookingParsed, int) {
+	bookings := make([]models.BookingParsed, 0)
+
+	repoBookings, err := service.bookingsRepository.GetAllBookings()
 	if err != nil {
 		log.Printf("%+v\n", err)
 		return nil, InternalError
 	}
 
-	if len(bookings) == 0 {
+	if len(repoBookings) == 0 {
 		log.Printf("Bookings not found\n")
 		return nil, BookingNotFound
+	}
+
+	for _, b := range repoBookings {
+		var booking = models.BookingParsed{}
+
+		booking.Id = b.Id
+		booking.UserId = b.UserId
+		booking.SpaceId = b.SpaceId
+
+		startParsed := time.Unix(b.Start, 0)
+		endParsed := time.Unix(b.End, 0)
+
+		booking.StartDate = startParsed.Format("2006-01-02")
+		booking.EndDate = endParsed.Format("2006-01-02")
+
+		diff := endParsed.Sub(startParsed)
+		booking.Days = int(diff.Hours() / 24)
+
+		bookings = append(bookings, booking)
 	}
 
 	return bookings, Success
 }
 
-func (service *BookingsService) GetBookingById(bookingId int) (*models.Booking, int) {
+func (service *BookingsService) GetBookingById(bookingId int) (*models.BookingParsed, int) {
 
-	booking, err := service.bookingsRepository.GetBookingById(bookingId)
+	b, err := service.bookingsRepository.GetBookingById(bookingId)
 	if err != nil {
 		log.Printf("%+v\n", err)
 		return nil, BookingNotFound
 	}
+
+	var booking = &models.BookingParsed{}
+
+	booking.Id = b.Id
+	booking.UserId = b.UserId
+	booking.SpaceId = b.SpaceId
+
+	startParsed := time.Unix(b.Start, 0)
+	endParsed := time.Unix(b.End, 0)
+
+	booking.StartDate = startParsed.Format("2006-01-02")
+	booking.EndDate = endParsed.Format("2006-01-02")
+
+	diff := endParsed.Sub(startParsed)
+	booking.Days = int(diff.Hours() / 24)
 
 	return booking, Success
 }
@@ -173,7 +220,8 @@ func (service *BookingsService) CancelBookingById(username string, password stri
 	return Success
 }
 
-func (service *BookingsService) GetUserBookings(userId int, username string, password string) ([]models.Booking, int) {
+func (service *BookingsService) GetUserBookings(userId int, username string, password string) ([]models.BookingParsed, int) {
+	bookings := make([]models.BookingParsed, 0)
 
 	_, ret := service.usersService.GetUserById(userId)
 	if ret == users.UserNotFound {
@@ -202,10 +250,34 @@ func (service *BookingsService) GetUserBookings(userId int, username string, pas
 		return nil, Unauthorized
 	}
 
-	bookings, err := service.bookingsRepository.GetUserBookings(userId)
+	repoBookings, err := service.bookingsRepository.GetUserBookings(userId)
 	if err != nil {
 		log.Printf("%+v\n", err)
+		return nil, InternalError
+	}
+
+	if len(repoBookings) == 0 {
+		log.Printf("Bookings not found\n")
 		return nil, BookingNotFound
+	}
+
+	for _, b := range repoBookings {
+		var booking = models.BookingParsed{}
+
+		booking.Id = b.Id
+		booking.UserId = b.UserId
+		booking.SpaceId = b.SpaceId
+
+		startParsed := time.Unix(b.Start, 0)
+		endParsed := time.Unix(b.End, 0)
+
+		booking.StartDate = startParsed.Format("2006-01-02")
+		booking.EndDate = endParsed.Format("2006-01-02")
+
+		diff := endParsed.Sub(startParsed)
+		booking.Days = int(diff.Hours() / 24)
+
+		bookings = append(bookings, booking)
 	}
 
 	return bookings, Success
