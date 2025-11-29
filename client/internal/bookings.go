@@ -95,8 +95,8 @@ func BookSpace(username string, password string) {
 		return
 	}
 
-	if days < 0 {
-		fmt.Printf("O número de dias deve ser positivo\n")
+	if days <= 0 {
+		fmt.Printf("O número de dias deve ser maior que zero\n")
 		return
 	}
 
@@ -250,6 +250,58 @@ func GetBooking() {
 		fmt.Println("========================")
 		fmt.Println()
 
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
+func GetMyBookings(id int) {
+	var bookings []RequestBooking
+
+	url := fmt.Sprintf("http://server:8080/users/%d/bookings", id)
+
+	// Faz a requisição ao backend
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("Não existe nenhuma reserva\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&bookings); err != nil {
+			panic(err)
+		}
+
+		for _, b := range bookings {
+
+			total, payed := getPayment(b.Id)
+			if total == -1 {
+				return
+			}
+
+			fmt.Println("========================")
+			fmt.Println("ID:", b.Id)
+			fmt.Println("ID do Usuário: ", b.UserId)
+			fmt.Println("ID do Espaço: ", b.SpaceId)
+			fmt.Println("Data de Início: ", b.StartDate)
+			fmt.Println("Data de Fim: ", b.EndDate)
+			fmt.Println("Dias Reservados: ", b.Days)
+			fmt.Println("Valor Pago (R$): ", payed)
+			fmt.Println("Custo Total (R$): ", total)
+			fmt.Println("========================")
+		}
 		return
 	}
 
