@@ -13,8 +13,13 @@ import (
 	"time"
 )
 
-type RequestBook struct {
-	Id int `json:"id"`
+type RequestBookings struct {
+	Id        int    `json:"id"`
+	UserId    int    `json:"UserId"`
+	SpaceId   int    `json:"SpaceId"`
+	StartDate string `json:"StartDate"`
+	EndDate   string `json:"EndDate"`
+	Days      int    `json:"Days"`
 }
 
 type RequestPayment struct {
@@ -60,7 +65,7 @@ func getPayment(id int) (float64, float64) {
 
 func BookSpace(username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
-	var req RequestBook
+	var req RequestBookings
 
 	fmt.Println("Reserva de Espaço")
 	fmt.Printf("ID do Espaço: ")
@@ -177,6 +182,56 @@ func BookSpace(username string, password string) {
 		fmt.Println("========================")
 		fmt.Println()
 
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+}
+
+func GetAllBookings() {
+	var bookings []RequestBookings
+
+	// Faz a requisição ao backend
+	resp, err := http.Get("http://server:8080/bookings")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		fmt.Printf("Não existe nenhuma reserva\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		fmt.Printf("Houve um erro interno no servidor\n")
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		if err := json.NewDecoder(resp.Body).Decode(&bookings); err != nil {
+			panic(err)
+		}
+
+		for _, b := range bookings {
+
+			total, payed := getPayment(b.Id)
+			if total == -1 {
+				return
+			}
+
+			fmt.Println("========================")
+			fmt.Println("ID:", b.Id)
+			fmt.Println("ID do Usuário: ", b.UserId)
+			fmt.Println("ID do Espaço: ", b.SpaceId)
+			fmt.Println("Data de Início: ", b.StartDate)
+			fmt.Println("Data de Fim: ", b.EndDate)
+			fmt.Println("Dias Reservados: ", b.Days)
+			fmt.Println("Custo Total (R$): ", total)
+			fmt.Println("Valor Pago (R$): ", payed)
+			fmt.Println("========================")
+		}
 		return
 	}
 
