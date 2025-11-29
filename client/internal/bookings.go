@@ -439,3 +439,88 @@ func PayBooking() {
 
 	fmt.Println("Erro desconhecido")
 }
+
+func CancelBooking(username string, password string) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Cancelamento de Reserva")
+	fmt.Printf("ID da Reserva: ")
+	input, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		fmt.Println("Erro ao ler entrada: ", err)
+		return
+	}
+
+	input = strings.TrimSpace(input)
+	id, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("Erro ao converter entrada")
+		return
+	}
+
+	payload := map[string]interface{}{
+		"username": username,
+		"password": password,
+	}
+
+	url := fmt.Sprintf("http://server:8080/bookings/%d", id)
+
+	jsonData, _ := json.Marshal(payload)
+	req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+
+	// Faz a requisição para o backend
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Trata valores de retorno
+	if resp.StatusCode == http.StatusNotFound {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		var data map[string]string
+		if err := json.Unmarshal(body, &data); err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		fmt.Println("Erro:", data["error"])
+
+		return
+	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		var data map[string]string
+		if err := json.Unmarshal(body, &data); err != nil {
+			fmt.Printf("Não foi possível obter a resposta")
+			return
+		}
+
+		fmt.Println("Erro:", data["error"])
+
+		return
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		fmt.Printf("A reserva foi cancelada com sucesso\n")
+		return
+	}
+
+	fmt.Println("Erro desconhecido")
+
+}

@@ -104,6 +104,11 @@ func (session *AdminSession) Handler(opt int) int {
 		return 1
 	}
 
+	if opt == 13 {
+		CancelBooking(session.Data.User.Username, session.Data.User.Password)
+		return 1
+	}
+
 	return 0
 }
 
