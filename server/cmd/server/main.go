@@ -8,7 +8,7 @@ import (
 	"os"
 
 	httpSwagger "github.com/swaggo/http-swagger"
-	_ "github.com/d4vi13/SeuCantinho/server/cmd/server/docs"
+	_ "github.com/d4vi13/SeuCantinho/server/docs"
 
 	"github.com/d4vi13/SeuCantinho/server/internal/database"
 	"github.com/d4vi13/SeuCantinho/server/internal/routes"
@@ -29,9 +29,8 @@ func main() {
 	routes.RegisterRoutes(mux)
 
 	//Registrar rota de documentação SWAGGER
-    mux.Handle("/docs/", httpSwagger.Handler(
-        httpSwagger.URL("http://localhost:8080/docs/swagger.json"),
-    ))
+    mux.Handle("/docs/", httpSwagger.WrapHandler)
+
 
 	err := database.Connect()
 	if err != nil {

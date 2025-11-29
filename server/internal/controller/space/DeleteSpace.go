@@ -18,9 +18,9 @@ import (
 // @Param id path int true "ID do espaço"
 // @Param space body RequestSpace true "Informações do usuário (username e password)"
 // @Success 200 {object} map[string]string "Espaço deletado com sucesso"
-// @Failure 400 {object} map[string]string "Senha incorreta ou dados inválidos"
-// @Failure 404 {object} map[string]string "Espaço não encontrado"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 400 {object} models.ErrorResponse "Senha incorreta ou dados inválidos"
+// @Failure 404 {object} models.ErrorResponse "Espaço não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /space/{id} [delete]
 func (controller *SpaceController) DeleteSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace

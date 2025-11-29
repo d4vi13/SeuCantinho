@@ -16,8 +16,8 @@ import (
 // @Produce json
 // @Param id path int true "ID do usuário"
 // @Success 200 {object} models.User "Usuário encontrado"
-// @Failure 404 {object} map[string]string "Usuário não encontrado"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 404 {object} models.ErrorResponse "Usuário não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /users/{id} [get]
 func (controller *UsersController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))

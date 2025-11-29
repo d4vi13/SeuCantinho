@@ -16,8 +16,8 @@ import (
 // @Produce json
 // @Param user body RequestUser true "Dados do novo usuário"
 // @Success 201 {object} models.User "Usuário criado com sucesso"
-// @Failure 409 {object} map[string]string "Usuário já existe"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 409 {object} models.ErrorResponse "Usuário já existe"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /users [post]
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userReq RequestUser

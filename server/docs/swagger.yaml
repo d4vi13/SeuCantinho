@@ -1,0 +1,610 @@
+definitions:
+  bookings.AuthRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  bookings.BookSpaceRequest:
+    properties:
+      bookingTime:
+        type: integer
+      password:
+        type: string
+      space:
+        type: integer
+      startDate:
+        type: string
+      username:
+        type: string
+    type: object
+  models.BookingParsed:
+    properties:
+      days:
+        type: integer
+      endDate:
+        type: string
+      id:
+        type: integer
+      spaceId:
+        type: integer
+      startDate:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        description: chave que aparece no JSON
+        type: string
+    type: object
+  models.Payment:
+    properties:
+      id:
+        type: integer
+      payedValue:
+        type: integer
+      totalValue:
+        type: integer
+    type: object
+  models.Space:
+    properties:
+      capacity:
+        type: integer
+      id:
+        type: integer
+      img:
+        items:
+          type: integer
+        type: array
+      location:
+        type: string
+      price:
+        type: integer
+      substation:
+        type: string
+    type: object
+  models.User:
+    properties:
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      passHash:
+        type: string
+      username:
+        type: string
+    type: object
+  payments.PaymentRequest:
+    properties:
+      value:
+        type: integer
+    type: object
+  space.RequestSpace:
+    properties:
+      capacity:
+        type: integer
+      location:
+        type: string
+      password:
+        type: string
+      png:
+        items:
+          type: integer
+        type: array
+      price:
+        type: integer
+      substation:
+        type: string
+      username:
+        type: string
+    type: object
+  users.RequestUser:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API que gerencia os usuários, as reservas, os espaços e os pagamentos
+  version: "1.0"
+paths:
+  /bookings:
+    get:
+      description: Retorna um JSON com todas as reservas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingParsed'
+            type: array
+        "404":
+          description: Nenhuma reserva encontrada
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Mostra todas as reservas
+      tags:
+      - Bookings
+    post:
+      description: Reserva um espaço
+      parameters:
+      - description: Dados da reserva
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/bookings.BookSpaceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ID da reserva criada
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Invalid booking or bad JSON
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Wrong password
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User or space not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Booking conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Adiciona uma nova reserva
+      tags:
+      - Bookings
+  /bookings/{id}:
+    delete:
+      description: Cancela uma reserva
+      parameters:
+      - description: ID da reserva
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Credenciais do usuário
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/bookings.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Reserva cancelada
+          schema:
+            $ref: '#/definitions/models.BookingParsed'
+        "400":
+          description: JSON inválido
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Senha incorreta ou usuário sem permissão
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Usuário ou reserva não encontrada
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do Servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Deleta a reserva especifcada pelo ID
+      tags:
+      - Bookings
+    get:
+      description: Retorna um JSON com os dados da reserva
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BookingParsed'
+        "404":
+          description: Reserva não encontrada
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Retorna a reserva do ID especificado
+      tags:
+      - Bookings
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Valida username e password e retorna os dados do usuário em caso
+        de sucesso
+      parameters:
+      - description: Credenciais do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.RequestUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login bem-sucedido
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Senha incorreta
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Usuário não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Realiza login do usuário
+      tags:
+      - Users
+  /payments/{id}:
+    get:
+      description: Retorna um JSON com os dados do pagamento referente ao ID informado
+      parameters:
+      - description: ID do pagamento
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dados do pagamento encontrados
+          schema:
+            $ref: '#/definitions/models.Payment'
+        "404":
+          description: Pagamento não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Retorna a entidade de um pagamento específico
+      tags:
+      - Payments
+    post:
+      consumes:
+      - application/json
+      description: Realiza o pagamento referente ao ID informado, usando o valor enviado
+        no corpo da requisição
+      parameters:
+      - description: ID do pagamento
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do Pagamento
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/payments.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Pagamento efetuado com sucesso
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "400":
+          description: Pagamento inválido ou JSON mal formatado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Executa o pagamento de um ID específico
+      tags:
+      - Payments
+  /space:
+    get:
+      description: Retorna um array com todos os espaço existentes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de espaços existentes
+          schema:
+            items:
+              $ref: '#/definitions/models.Space'
+            type: array
+        "404":
+          description: Nenhum espaço encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Lista todos os espaços
+      tags:
+      - Spaces
+    post:
+      consumes:
+      - application/json
+      description: Cria um espaço com os dados enviados no corpo da requisição. Apenas
+        administradores podem criar espaços.
+      parameters:
+      - description: Dados do novo espaço
+        in: body
+        name: space
+        required: true
+        schema:
+          $ref: '#/definitions/space.RequestSpace'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Espaço criado com sucesso
+          schema:
+            $ref: '#/definitions/models.Space'
+        "400":
+          description: Usuário não encontrado ou não é administrador
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Espaço já existe
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Cria um novo espaço
+      tags:
+      - Spaces
+  /space/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deleta um espaço existente pelo ID informado. Apenas administradores
+        podem deletar espaços.
+      parameters:
+      - description: ID do espaço
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Informações do usuário (username e password)
+        in: body
+        name: space
+        required: true
+        schema:
+          $ref: '#/definitions/space.RequestSpace'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Espaço deletado com sucesso
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Senha incorreta ou dados inválidos
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Espaço não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Deleta um espaço específico
+      tags:
+      - Spaces
+    get:
+      description: Retorna um JSON com os dados do espaço especificado pelo ID
+      parameters:
+      - description: ID do espaço
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Espaço encontrado com sucesso
+          schema:
+            $ref: '#/definitions/models.Space'
+        "404":
+          description: Espaço não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Retorna um espaço específico
+      tags:
+      - Spaces
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um espaço existente com base no ID informado.
+        Apenas administradores podem atualizar espaços.
+      parameters:
+      - description: ID do espaço
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados atualizados do espaço
+        in: body
+        name: space
+        required: true
+        schema:
+          $ref: '#/definitions/space.RequestSpace'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Espaço atualizado com sucesso
+          schema:
+            $ref: '#/definitions/models.Space'
+        "400":
+          description: Usuário não encontrado, não é admin, senha incorreta ou espaço
+            não existe
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Atualiza um espaço existente
+      tags:
+      - Spaces
+  /users:
+    get:
+      description: Retorna um array com todos os usuários cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de usuários cadastrados
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "404":
+          description: Nenhum usuário encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Lista todos os usuários
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Cria um usuário com username e password informados no corpo da
+        requisição
+      parameters:
+      - description: Dados do novo usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.RequestUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuário criado com sucesso
+          schema:
+            $ref: '#/definitions/models.User'
+        "409":
+          description: Usuário já existe
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Cria um novo usuário
+      tags:
+      - Users
+  /users/{id}:
+    get:
+      description: Retorna os dados do usuário correspondente ao ID informado
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Usuário encontrado
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Usuário não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Retorna um usuário pelo ID
+      tags:
+      - Users
+  /users/{id}/bookings:
+    get:
+      description: Retorna um array com todas as reservas do usuário, especificado
+        pelo ID
+      parameters:
+      - description: ID usuário
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de reservas do usuário
+          schema:
+            items:
+              $ref: '#/definitions/models.BookingParsed'
+            type: array
+        "404":
+          description: Usuário ou Reserva não encontrado
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Erro interno do Servidor
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Lista de todas as reservas de um usuário
+      tags:
+      - Bookings
+swagger: "2.0"

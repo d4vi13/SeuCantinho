@@ -16,9 +16,9 @@ import (
 // @Produce json
 // @Param space body RequestSpace true "Dados do novo espaço"
 // @Success 201 {object} models.Space "Espaço criado com sucesso"
-// @Failure 400 {object} map[string]string "Usuário não encontrado ou não é administrador"
-// @Failure 409 {object} map[string]string "Espaço já existe"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 400 {object} models.ErrorResponse "Usuário não encontrado ou não é administrador"
+// @Failure 409 {object} models.ErrorResponse "Espaço já existe"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /space [post]
 func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace

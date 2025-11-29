@@ -13,10 +13,10 @@ import (
 // @Description Retorna um JSON com todas as reservas
 // @Tags Bookings
 // @Produce json
-// @Success 200 {array} models.Bookings
+// @Success 200 {array} models.BookingParsed
 // @Router /bookings [get]
-// @Failure 404 {object} map[string]string "Nenhuma reserva encontrada"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 404 {object} models.ErrorResponse "Nenhuma reserva encontrada"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 func (controller *BookingsController) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 	bookings, ret := controller.bookingsService.GetAllBookings()
 

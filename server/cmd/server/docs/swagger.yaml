@@ -1,7 +1,0 @@
-host: localhost:8080
-info:
-  contact: {}
-  description: API que gerencia os usuários, as reservas, os espaços e os pagamentos
-  version: "1.0"
-paths: {}
-swagger: "2.0"

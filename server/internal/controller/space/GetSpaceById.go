@@ -16,8 +16,8 @@ import (
 // @Produce json
 // @Param id path int true "ID do espaço"
 // @Success 200 {object} models.Space "Espaço encontrado com sucesso"
-// @Failure 404 {object} map[string]string "Espaço não encontrado"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 404 {object} models.ErrorResponse "Espaço não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /space/{id} [get]
 func (controller *SpaceController) GetSpaceById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))

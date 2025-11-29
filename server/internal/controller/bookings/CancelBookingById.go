@@ -16,11 +16,11 @@ import (
 // @Produce json
 // @Param id path int true "ID da reserva"
 // @Param credentials body AuthRequest true "Credenciais do usuário"
-// @Success 200 {object} map[string]string "Reserva cancelada"
-// @Failure 400 {object} map[string]string "JSON inválido"
-// @Failure 401 {object} map[string]string "Senha incorreta ou usuário sem permissão"
-// @Failure 404 {object} map[string]string "Usuário ou reserva não encontrada"
-// @Failure 500 {object} map[string]string "Erro interno do Servidor"
+// @Success 200 {object} models.BookingParsed "Reserva cancelada"
+// @Failure 400 {object} models.ErrorResponse "JSON inválido"
+// @Failure 401 {object} models.ErrorResponse "Senha incorreta ou usuário sem permissão"
+// @Failure 404 {object} models.ErrorResponse "Usuário ou reserva não encontrada"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do Servidor"
 // @Router /bookings/{id} [delete]
 func (controller *BookingsController) CancelBookingById(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest

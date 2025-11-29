@@ -17,9 +17,9 @@ import (
 // @Produce json
 // @Param id path int true "ID do pagamento"
 // @Param payment body PaymentRequest true "Dados do Pagamento"
-// @Success 200 {object} map[string]string "Pagamento efetuado com sucesso"
-// @Failure 400 {object} map[string]string "Pagamento inválido ou JSON mal formatado"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Success 200 {object} models.ErrorResponse "Pagamento efetuado com sucesso"
+// @Failure 400 {object} models.ErrorResponse "Pagamento inválido ou JSON mal formatado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /payments/{id} [post]
 func (controller *PaymentsController) MakePayment(w http.ResponseWriter, r *http.Request) {
 	var req PaymentRequest

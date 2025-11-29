@@ -14,8 +14,8 @@ import (
 // @Tags Spaces
 // @Produce json
 // @Success 200 {array} models.Space "Lista de espaços existentes"
-// @Failure 404 {object} map[string]string "Nenhum espaço encontrado"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Failure 404 {object} models.ErrorResponse "Nenhum espaço encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 // @Router /space [get]
 func (controller *SpaceController) GetAllSpaces(w http.ResponseWriter, r *http.Request) {
 	spaces, ret := controller.spaceService.GetAllSpaces()

@@ -15,9 +15,9 @@ import (
 // @Tags Bookings
 // @Produce json
 // @Param id path int true "ID usuário"
-// @Success 200 {array} models.Bookings "Lista de reservas do usuário"
-// @Failure 404 {object} map[string]string "Usuário ou Reserva não encontrado"
-// @Failure 500 {object} map[string]string "Erro interno do Servidor"
+// @Success 200 {array} models.BookingParsed "Lista de reservas do usuário"
+// @Failure 404 {object} models.ErrorResponse "Usuário ou Reserva não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do Servidor"
 // @Router /users/{id}/bookings [get]
 func (controller *BookingsController) GetUserBookings(w http.ResponseWriter, r *http.Request) {
 
