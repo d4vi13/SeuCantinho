@@ -58,7 +58,7 @@ func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.R
 		json.NewEncoder(w).Encode(map[string]string{"erro": "space not found"})
 		fmt.Printf("INFO: Space %d not found\n", req.SpaceId)
 	case bookings.PaymentCreationFailed:
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"erro": "payment creation failed"})
 		fmt.Printf("INFO: Payment creation failed \n")
 	case bookings.WrongPassword:

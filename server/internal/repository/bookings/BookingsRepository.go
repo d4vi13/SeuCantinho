@@ -45,6 +45,23 @@ func (repository *BookingsRepository) Insert(booking *models.Booking) (int, erro
 	return id, nil
 }
 
+func (repository *BookingsRepository) GetBookingById(id int) (*models.Booking, error) {
+	query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings WHERE id = $1`
+	booking := &models.Booking{}
+
+	row := database.QueryRow(query, id)
+
+	err := row.Scan(&booking.Id, &booking.SpaceId, &booking.UserId, &booking.Start, &booking.End)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("booking not found")
+		}
+		return nil, err
+	}
+
+	return booking, nil
+}
+
 func (repository *BookingsRepository) GetAllBookings() ([]models.Booking, error) {
 	bookings := make([]models.Booking, 0)
 
@@ -70,23 +87,6 @@ func (repository *BookingsRepository) GetAllBookings() ([]models.Booking, error)
 	}
 
 	return bookings, nil
-}
-
-func (repository *BookingsRepository) GetBookingById(id int) (*models.Booking, error) {
-	query := `SELECT id, spaceId, userId, bookingStart, bookingEnd FROM bookings WHERE id = $1`
-	booking := &models.Booking{}
-
-	row := database.QueryRow(query, id)
-
-	err := row.Scan(&booking.Id, &booking.SpaceId, &booking.UserId, &booking.Start, &booking.End)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.New("booking not found")
-		}
-		return nil, err
-	}
-
-	return booking, nil
 }
 
 func (repository *BookingsRepository) Delete(id int) error {

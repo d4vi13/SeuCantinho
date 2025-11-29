@@ -52,7 +52,7 @@ func (controller *SpaceController) UpdateSpace(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "application/json")
 	switch ret {
 	case svc.SpaceUpdated:
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(space)
 		fmt.Printf("INFO: Space %s [%s] updated succesfuly\n", spaceReq.Location, space.Substation)
 	case svc.UserNotFound:

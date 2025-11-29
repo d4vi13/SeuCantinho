@@ -11,18 +11,18 @@ Class SpaceController {
 Class SpaceService {
     - UsersService usersService
     - SpaceRepository spaceRepository
-    + Space CreateSpace(username, password, location, substation, price, capacity, img)
-    + void UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
     + Space GetSpaceById(spaceId)
+    + int64 ComputeBookingPrice(spaceId, Duration)
+    + Space CreateSpace(username, password, location, substation, price, capacity, img)
     + Space[] GetAllSpaces()
     + int DeleteSpace(spaceId, username, password)
+    + Space UpdateSpace(spaceId, username, password, location, substation, price, capacity, img)
 }
 
-Class UsersControllers {
+Class UsersController {
     - UsersService usersService
     + void CreateUser(req)
-    + void ValidateUser(req)
-    + void UserIsAdmin(req)
+    + void UserLogin(req)
     + void GetUserById(req)
     + void GetAllUsers(req)
 }
@@ -30,50 +30,53 @@ Class UsersControllers {
 Class UsersService {
     - UsersRepository usersRepository
     + int GetUserId(username)
-    + bool AuthenticateUser(username, password)
-    + bool UserIsAdmin(userId)
-    + bool CreateUser(username, password, isAdmin)
     + User GetUserById(userId)
+    + int AuthenticateUser(username, password)
+    + bool UserIsAdmin(username)
+    + User Login(username, password)
+    + User CreateUser(username, password)
     + User[] GetAllUsers()
 }
 
 Class UsersRepository {
-    + int, error Insert(user)
-    + User GetUserById(userId)
+    + int Insert(user)
+    + User GetUserById(id)
     + User GetUserByName(username)
     + User[] GetAllUsers()
 }
 
 Class SpaceRepository {
     - Database db
-    + int, error Insert(space)
+    + Space GetSpace(location, substation)
     + Space GetSpaceById(id)
+    + int Insert(space)
     + error Update(space)
     + Space[] GetAllSpaces()
     + error DeleteSpace(id)
 }
 
 Class Space {
-    - int id
-    - string location
-    - string substation
-    - double price
-    - int capacity
-    - byte[] img
+    + int Id
+    + string Location
+    + string Substation
+    + double Price
+    + int Capacity
+    + byte[] Img
 }
 
 Class User {
-    - int id
-    - string username
-    - string passHash
-    - bool isAdmin
+    + int Id
+    + string Username
+    + string PassHash
+    + bool IsAdmin
 }
 
 Class BookingController {
     - BookingService bookingService
-    + void CreateBooking(req)
+    + void BookSpace(req)
     + void GetBookingById(req)
     + void GetAllBookings(req)
+    + void GetUserBookings(req)
     + void CancelBooking(req)
 }
 
@@ -81,51 +84,66 @@ Class BookingService {
     - BookingRepository bookingRepository
     - UsersService usersService
     - SpaceService spaceService
-    + Book CreateBooking(data, userId, spaceId, paid, hasDeposit)
-    + Book[] GetAllBookings()
-    + Book GetBookingById(bookingId)
-    + bool CancelBooking(req)
+    - PaymentsService paymentsService
+    + int BookSpace(username, password, spaceId, startDate, days)
+    + BookingParsed[] GetAllBookings()
+    + BookingParsed GetBookingById(bookingId)
+    + bool IsBookingOwner(userId, bookingId)
+    + int CancelBookingById(username, password, bookingId)
+    + BookingParsed[] GetUserBookings(userId)
 }
 
 Class BookingRepository {
     - Database db
-    + bool SaveBooking(book)
-    + Book GetBookingById(id)
-    + Book[] GetAllBookings()
-    + bool DeleteBooking(book)
+    + bool CheckBookingConflicts(booking)
+    + int Insert(booking)
+    + Booking GetBookingById(id)
+    + Booking[] GetAllBookings()
+    + int Delete(id)
+    + Booking[] GetUserBookings(userId)
 }
 
-Class Book {
-    - Date date
-    - User user
-    - Space space
-    - bool paid
-    - bool signalDeposit
+Class Booking {
+    + int Id 
+    + int UserId 
+    + int SpaceId 
+    + int64 Start
+    + int64 End
+    + Validate()
 }
 
-Class PixController {
-    - PixService pixService
-    + void MakePartialPix(req)
-    + void MakeFullPix(req)
+Class BookingParsed {
+    + int Id
+    + int UserId
+    + int SpaceId
+    + string StartDate
+    + string EndDate
+    + int Days
 }
 
-Class PixService {
-    - PixRepository pixRepository
-    + Pix MakePartialPix(name, value)
-    + Pix MakeFullPix(name, value)
-    + Pix GetPixById(pixId)
+Class PaymentsController {
+    - PaymentsService paymentsService
+    + MakePayment(req)
+    + GetPaymentsById(req)
 }
 
-Class PixRepository {
+Class PaymentsService {
+    - PaymentsRepository paymentsRepository
+    + int CreatePayment(id, value)
+    + Payment GetPaymentById(paymentId)
+    + int MakePayments(paymentId, value)
+}
+
+Class PaymentsRepository {
     - Database db
-    + bool SavePix(pix)
-    + Pix GetPixById(pixId)
+    + bool SavePayments(pix)
+    + Payments GetPaymentsById(pixId)
 }
 
-Class Pix {
-    - int id
-    - string name
-    - double value
+Class Payment {
+    + int Id
+    + int64 TotalValue
+    + int64 PayedValue
 }
 
 
@@ -140,23 +158,24 @@ UsersService --> User : "Cria / usa"
 SpaceRepository -d-> Space : "Retorna"
 UsersRepository --> User : "Retorna"
 
-PixController --> PixService : "Chama métodos"
-PixService -r-> PixRepository : "Chama métodos"
-PixRepository --> Pix : "Retorna"
-PixService --> Pix : "Cria / usa"
+PaymentsController --> PaymentsService : "Chama métodos"
+PaymentsService -r-> PaymentsRepository : "Chama métodos"
+PaymentsRepository --> Payment : "Retorna"
+PaymentsService --> Payment : "Cria / usa"
 
 BookingController --> BookingService : "Chama métodos"
 BookingService --> BookingRepository : "Chama métodos"
 BookingService -l-> SpaceService : "Chama métodos"
 BookingService -d-> UsersService : "Chama métodos"
-BookingService --> Book : "Cria / usa"
-BookingRepository --> Book : "Retorna"
+BookingService -r-> PaymentsService : "Chama métodos"
+BookingService --> Booking : "Cria / usa"
+BookingService --> BookingParsed : "Cria / retorna"
+BookingRepository --> Booking : "Retorna"
 
 SpaceController -r[hidden]-> BookingController
 BookingController -l[hidden]-> SpaceController
-BookingController -r[hidden]-> PixController
-PixController -l[hidden]-> BookingController
-
-UsersControllers --> UsersService : "Chama Métodos"
+BookingController -r[hidden]-> PaymentsController
+PaymentsController -l[hidden]-> BookingController
+UsersController --> UsersService : "Chama Métodos"
 
 @enduml
