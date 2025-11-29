@@ -31,7 +31,7 @@ func (controller *PaymentsController) MakePayment(w http.ResponseWriter, r *http
 	w.Header().Set("Content-Type", "application/json")
 	switch ret {
 	case svc.Success:
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(map[string]string{"info": "payment made"})
 		fmt.Printf("INFO: payment %d was payed\n", id)
 	case svc.InvalidPayment:

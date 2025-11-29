@@ -35,11 +35,11 @@ func (controller *BookingsController) CancelBookingById(w http.ResponseWriter, r
 		fmt.Printf("INFO: Booking %d was canceled\n", id)
 	case svc.UserNotFound:
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(map[string]string{"erro": "user not found"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "user not found"})
 		fmt.Printf("INFO: User %s not found\n", req.Username)
 	case svc.WrongPassword:
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"erro": "wrong password"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "wrong password"})
 		fmt.Printf("INFO: Wrong Password for user %s given\n", req.Username)
 	case svc.Unauthorized:
 		w.WriteHeader(http.StatusUnauthorized)
