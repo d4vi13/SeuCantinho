@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type RequestBook struct {
@@ -90,20 +89,17 @@ func BookSpace(username string, password string) {
 		return
 	}
 
-	startDate, err := time.Parse("2006-01-02", dateStr)
-	if err != nil {
-		fmt.Println("Data inválida:", err)
+	if days < 0 {
+		fmt.Printf("O número de dias deve ser positivo\n")
 		return
 	}
 
-	endDate := startDate.AddDate(0, 0, days)
-
 	payload := map[string]interface{}{
-		"username": username,
-		"password": password,
-		"space":    spaceId,
-		"start":    startDate.Unix(),
-		"end":      endDate.Unix(),
+		"username":    username,
+		"password":    password,
+		"space":       spaceId,
+		"startDate":   dateStr,
+		"bookingTime": days,
 	}
 
 	// Faz a requisição para o backend
@@ -165,7 +161,7 @@ func BookSpace(username string, password string) {
 		fmt.Println("ID:", req.Id)
 		fmt.Println("ID do Espaço: ", spaceId)
 		fmt.Println("Data de Início: ", dateStr)
-		fmt.Println("Dias Reservados: ", daysStr)
+		fmt.Println("Dias Reservados: ", days)
 		fmt.Println("Custo Total (R$): ", total)
 		fmt.Println("========================")
 		fmt.Println()
