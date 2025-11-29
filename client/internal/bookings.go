@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type RequestBook struct {
@@ -77,8 +78,8 @@ func BookSpace(username string, password string) {
 	}
 
 	fmt.Print("Data inicial (AAAA-MM-DD): ")
-	dateStr, _ := reader.ReadString('\n')
-	dateStr = strings.TrimSpace(dateStr)
+	startDate, _ := reader.ReadString('\n')
+	startDate = strings.TrimSpace(startDate)
 
 	fmt.Print("Quantidade de dias: ")
 	daysStr, _ := reader.ReadString('\n')
@@ -98,7 +99,7 @@ func BookSpace(username string, password string) {
 		"username":    username,
 		"password":    password,
 		"space":       spaceId,
-		"startDate":   dateStr,
+		"startDate":   startDate,
 		"bookingTime": days,
 	}
 
@@ -156,11 +157,21 @@ func BookSpace(username string, password string) {
 			return
 		}
 
+		startParsed, err := time.Parse("2006-01-02", startDate)
+		if err != nil {
+			fmt.Printf("Falha ao converter datas\n")
+			return
+		}
+
+		endParsed := startParsed.AddDate(0, 0, days)
+		endDate := endParsed.Format("2006-01-02")
+
 		fmt.Println()
 		fmt.Println("========================")
 		fmt.Println("ID:", req.Id)
 		fmt.Println("ID do Espaço: ", spaceId)
-		fmt.Println("Data de Início: ", dateStr)
+		fmt.Println("Data de Início: ", startDate)
+		fmt.Println("Data de Fim: ", endDate)
 		fmt.Println("Dias Reservados: ", days)
 		fmt.Println("Custo Total (R$): ", total)
 		fmt.Println("========================")
