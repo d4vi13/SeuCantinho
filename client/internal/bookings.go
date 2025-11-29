@@ -293,7 +293,6 @@ func GetMyBookings(id int) {
 
 			fmt.Println("========================")
 			fmt.Println("ID:", b.Id)
-			fmt.Println("ID do Usuário: ", b.UserId)
 			fmt.Println("ID do Espaço: ", b.SpaceId)
 			fmt.Println("Data de Início: ", b.StartDate)
 			fmt.Println("Data de Fim: ", b.EndDate)
