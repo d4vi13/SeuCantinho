@@ -46,6 +46,14 @@ Tudo é gerenciado via **Docker Compose**.
 
 ## 🐳 Como Executar o Projeto
 
+### 0. Gerar o arquivo da documentação
+
+Navegue até o primeiro diretório `server` e gere os arquivo `swagger.json` e `swagger.yaml` com a seguinte linha de comando:
+
+```bash
+swag init -g cmd/server/main.go
+```
+
 ### 1. Subir todos os serviços
 
 Execute:
