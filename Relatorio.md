@@ -18,7 +18,7 @@ Existem **dois** tipos de usuário:
 - **Usuário Comum** - Não tem acesso a todos os dados do sistema.
 - **Administrador** - Tem acesso ao sistema por completo.
 
-Como já demonstrado, cada tipo de usuário possui ações distintas:
+Como já demonstrado, cada tipo de usuário possui um conjunto de ações:
 
 🤖 **Administrador:**
 
@@ -65,7 +65,7 @@ Para respeitar o estilo arquitetural escolhido, a organização dos arquivos foi
 │       ├── session.go
 │       ├── spaces.go
 │       └── user.go
-├── data  [error opening dir]
+├── data
 ├── diagrams
 │   ├── classes.png
 │   ├── Classes_SeuCantinho.uml
@@ -152,15 +152,15 @@ Para respeitar o estilo arquitetural escolhido, a organização dos arquivos foi
 
 ### 1.3 📲 Estilo Arquitetural de Comunicação: REST
 
-A comunicação realizada entre o usuário e o **backend** do código é feita por meio da API REST. No contexto do sistema `SeuCantinho`, o arquivo com as rotas está localizado em `"/server/internal"`. Cada rota chama uma função implementada para cada ação possível de ser realizada.
+A comunicação realizada entre o usuário e o **backend** do código é feita por meio da API REST. No contexto do sistema `SeuCantinho`, o arquivo com as rotas está localizado em `"/server/internal/routes"`. Cada rota chama uma função implementada para cada ação possível de ser realizada.
 
 ## 2. Mapeamento UML
 
 **Diagrama de Classes**
-![Diagrama de Classes](diagrams/classes.png)
+![Diagrama de Classes](uml/classes.png)
 
 **Diagrama de Componentes**
-![Diagrama de Componentes](diagrams/cscomponentes.png)
+![Diagrama de Componentes](uml/cscomponentes.png)
 
 
 **Decisões de Design**
@@ -171,19 +171,24 @@ A comunicação realizada entre o usuário e o **backend** do código é feita p
 ## 3. 🛠️ Instruções de Execução
 
 **1. Garanta que seu computador tem o Swagger instalado:** 
-Execute:
+A partir do diretório raiz (`SeuCantinho`), execute:
 ```bash
-nmp install swagger-ui-express js-yaml
+cd server/
+go get -u github.com/swaggo/swag
+go install github.com/swaggo/swag/cmd/swag@latest
 ```
->Obs: Se você não possuir o comando `npm` instale-o com `sudo apt install npm`
 
->Obs2: Se o seu computador não possuir a versão mais recente da linguagem GO, realize os seguintes comandos: `wget https://go.dev/dl/go1.25.4.linux-amd64.tar.gz` e descompacte com `sudo tar -C /usr/local -xzf go1.25.4.linux-amd64.tar.gz`
+>Obs: Certifique-se de corrigir a variável de ambiente com:
+```bash
+export PATH=$(go env GOPATH)/bin:$PATH
+```
 
->Obs3: **Talvez** possa ser necessário adicionar alguns PATHS no arquivo .bashrc em caso de ainda persistirem erros.
+>Obs2: Se o seu computador não possuir a versão mais recente da linguagem GO, realize os seguintes comandos: `wget https://go.dev/dl/go1.25.4.linux-amd64.tar.gz`, descompacte com `sudo tar -C /usr/local -xzf go1.25.4.linux-amd64.tar.gz` e atualize com `export PATH=$PATH:/usr/local/go/bin`
 
 **2. Gerar a Documentação no formato Swagger**
-No diretório `server` mais externo, execute:
+A partir do diretório raiz (`SeuCantinho`), execute:
 ```bash
+cd server/
 swag init -g cmd/server/main.go
 ```
 
@@ -192,7 +197,9 @@ No diretório raiz (`SeuCantinho`) suba o docker com o comando:
 ```bash
 sudo docker compose up -d --build
 ```
-Ele inicia o servidor e o cliente, o trecho `--build` não é obrigatório, ele serve para pegar a versão mais recente dos arquivos, vale ressaltar que o docker funciona muito sem ele também.
+Ele inicia o servidor e o cliente, o trecho `--build` não é obrigatório, porém, ele é utilizado para informar ao docker para utilizar a versão mais recente do código para construir os containers.
+
+>Obs: Acesse a documentação em: http://localhost:8080/docs/index.html
 
 **4. Rode o Cliente**
 No mesmo diretório do servidor, execute:
