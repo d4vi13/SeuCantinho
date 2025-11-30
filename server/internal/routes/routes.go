@@ -7,6 +7,7 @@ import (
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/payments"
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/space"
 	"github.com/d4vi13/SeuCantinho/server/internal/controller/users"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func RegisterRoutes(mux *http.ServeMux) {
@@ -68,4 +69,6 @@ func RegisterRoutes(mux *http.ServeMux) {
 	//Aciona o Controlador de Usuários e retorna o usuário especificado pelo ID
 	mux.HandleFunc("GET /users/{id}", usersController.GetUserById)
 
+	// Adiciona uma rota Swagger para documentação
+	mux.Handle("/docs/", httpSwagger.WrapHandler)
 }
