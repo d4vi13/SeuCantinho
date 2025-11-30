@@ -8,6 +8,17 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/users"
 )
 
+// CreateUser godoc
+// @Summary Cria um novo usuário
+// @Description Cria um usuário com username e password informados no corpo da requisição
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body RequestUser true "Dados do novo usuário"
+// @Success 201 {object} models.User "Usuário criado com sucesso"
+// @Failure 409 {object} models.ErrorResponse "Usuário já existe"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
+// @Router /users [post]
 func (controller *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userReq RequestUser
 

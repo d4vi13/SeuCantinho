@@ -9,6 +9,16 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/payments"
 )
 
+// GetPaymentById godoc
+// @Summary Retorna a entidade de um pagamento específico
+// @Description Retorna um JSON com os dados do pagamento referente ao ID informado
+// @Tags Payments
+// @Produce json
+// @Param id path int true "ID do pagamento"
+// @Success 200 {object} models.Payment "Dados do pagamento encontrados"
+// @Failure 404 {object} models.ErrorResponse "Pagamento não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
+// @Router /payments/{id} [get]
 func (controller *PaymentsController) GetPaymentById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if (err != nil) || (id < 1) {

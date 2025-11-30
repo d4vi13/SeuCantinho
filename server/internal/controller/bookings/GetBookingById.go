@@ -9,6 +9,15 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
 )
 
+// GetBookingById godoc
+// @Summary Retorna a reserva do ID especificado
+// @Description Retorna um JSON com os dados da reserva
+// @Tags Bookings
+// @Produce json
+// @Success 200 {object} models.BookingParsed
+// @Router /bookings/{id} [get]
+// @Failure 404 {object} models.ErrorResponse "Reserva não encontrada"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 func (controller *BookingsController) GetBookingById(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if (err != nil) || (id < 1) {

@@ -8,6 +8,15 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
 )
 
+// GetAllBookings godoc
+// @Summary Mostra todas as reservas
+// @Description Retorna um JSON com todas as reservas
+// @Tags Bookings
+// @Produce json
+// @Success 200 {array} models.BookingParsed
+// @Router /bookings [get]
+// @Failure 404 {object} models.ErrorResponse "Nenhuma reserva encontrada"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
 func (controller *BookingsController) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 	bookings, ret := controller.bookingsService.GetAllBookings()
 

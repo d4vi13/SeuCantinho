@@ -8,6 +8,19 @@ import (
 	"github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
 )
 
+// BookSpace godoc
+// @Summary Adiciona uma nova reserva
+// @Description Reserva um espaço
+// @Tags Bookings
+// @Produce json
+// @Success 201 {object} map[string]int "ID da reserva criada"
+// @Router /bookings [post]
+// @Param booking body BookSpaceRequest true "Dados da reserva"
+// @Failure 400 {object} models.ErrorResponse "Invalid booking or bad JSON"
+// @Failure 401 {object} models.ErrorResponse "Wrong password"
+// @Failure 404 {object} models.ErrorResponse "User or space not found"
+// @Failure 409 {object} models.ErrorResponse "Booking conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
 func (controller *BookingsController) BookSpace(w http.ResponseWriter, r *http.Request) {
 	var req BookSpaceRequest
 

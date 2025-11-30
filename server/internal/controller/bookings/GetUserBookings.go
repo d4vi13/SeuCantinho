@@ -9,6 +9,16 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/bookings"
 )
 
+// GetUserBookings godoc
+// @Summary Lista de todas as reservas de um usuário
+// @Description Retorna um array com todas as reservas do usuário, especificado pelo ID
+// @Tags Bookings
+// @Produce json
+// @Param id path int true "ID usuário"
+// @Success 200 {array} models.BookingParsed "Lista de reservas do usuário"
+// @Failure 404 {object} models.ErrorResponse "Usuário ou Reserva não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do Servidor"
+// @Router /users/{id}/bookings [get]
 func (controller *BookingsController) GetUserBookings(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))

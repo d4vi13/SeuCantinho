@@ -8,6 +8,18 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
+// CreateSpace godoc
+// @Summary Cria um novo espaço
+// @Description Cria um espaço com os dados enviados no corpo da requisição. Apenas administradores podem criar espaços.
+// @Tags Spaces
+// @Accept json
+// @Produce json
+// @Param space body RequestSpace true "Dados do novo espaço"
+// @Success 201 {object} models.Space "Espaço criado com sucesso"
+// @Failure 400 {object} models.ErrorResponse "Usuário não encontrado ou não é administrador"
+// @Failure 409 {object} models.ErrorResponse "Espaço já existe"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
+// @Router /space [post]
 func (controller *SpaceController) CreateSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace
 

@@ -9,6 +9,19 @@ import (
 	svc "github.com/d4vi13/SeuCantinho/server/internal/services/space"
 )
 
+// DeleteSpace godoc
+// @Summary Deleta um espaço específico
+// @Description Deleta um espaço existente pelo ID informado. Apenas administradores podem deletar espaços.
+// @Tags Spaces
+// @Accept json
+// @Produce json
+// @Param id path int true "ID do espaço"
+// @Param space body RequestSpace true "Informações do usuário (username e password)"
+// @Success 200 {object} map[string]string "Espaço deletado com sucesso"
+// @Failure 400 {object} models.ErrorResponse "Senha incorreta ou dados inválidos"
+// @Failure 404 {object} models.ErrorResponse "Espaço não encontrado"
+// @Failure 500 {object} models.ErrorResponse "Erro interno do servidor"
+// @Router /space/{id} [delete]
 func (controller *SpaceController) DeleteSpace(w http.ResponseWriter, r *http.Request) {
 	var spaceReq RequestSpace
 
