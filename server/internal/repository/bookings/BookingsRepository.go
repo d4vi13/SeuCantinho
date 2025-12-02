@@ -3,6 +3,7 @@ package bookings
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/d4vi13/SeuCantinho/server/internal/database"
 	models "github.com/d4vi13/SeuCantinho/server/internal/models/bookings"
@@ -24,6 +25,7 @@ func (repository *BookingsRepository) CheckBookingConflicts(booking *models.Book
 		}
 
 		//internal error
+		fmt.Printf("%v\n", err)
 		return true, errors.New("internal db error")
 	}
 
